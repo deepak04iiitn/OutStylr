@@ -5,6 +5,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import path from 'path';
 
+import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
+
 
 dotenv.config();
 
@@ -25,6 +28,10 @@ const PORT = process.env.PORT || 5000;
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
+
+
+app.use('/backend/user', userRoutes);
+app.use('/backend/auth', authRoutes);
 
 
 // Ping endpoint to keep backend awake
