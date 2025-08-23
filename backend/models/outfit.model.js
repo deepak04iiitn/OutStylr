@@ -122,27 +122,32 @@ const outfitSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: [
-            "Casual", 
-            "Formal", 
-            "Party", 
+            "Couple",
             "Wedding", 
-            "Festival", 
-            "Ethnic", 
-            "Western", 
-            "Sports", 
-            "Office", 
+            "Traditional", 
+            "Party", 
+            "Trip/Travel", 
+            "Dinner", 
             "Date", 
-            "Travel", 
-            "Beach", 
-            "Winter", 
-            "Summer", 
-            "Monsoon"
+            "Birthday", 
+            "Formal", 
+            "Casual", 
+            "Festival", 
+            "Workout", 
+            "Maternity", 
+            "Prom and Graduation", 
+            "Vacation", 
+            "Winter",
+            "Summer Beachwear",
+            "Concert and Music Festival",
+            "Outdoor Adventure",
+            "Concert"
         ]
     },
     section: {
         type: String,
         required: true,
-        enum: ["Men", "Women", "Kids", "Unisex"]
+        enum: ["Men", "Women", "Kids"]
     },
     numberOfItems: {
         type: Number,

@@ -7,6 +7,7 @@ import path from 'path';
 
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
+import cartRoutes from './routes/cart.route.js';
 
 
 dotenv.config();
@@ -32,6 +33,7 @@ mongoose.connect(MONGODB_URI)
 
 app.use('/backend/user', userRoutes);
 app.use('/backend/auth', authRoutes);
+app.use('/backend/cart', cartRoutes);
 
 
 // Ping endpoint to keep backend awake
