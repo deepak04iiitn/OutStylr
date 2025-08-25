@@ -252,7 +252,7 @@ export default function Home() {
               className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white leading-[0.9] mb-8"
               variants={itemVariants}
             >
-              End the{' '}
+              End of{' '}
               <motion.span 
                 className="relative inline-block"
                 whileHover={{ scale: 1.05 }}
