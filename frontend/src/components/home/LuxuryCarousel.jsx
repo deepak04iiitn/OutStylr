@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide }) {
@@ -6,12 +6,50 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % items.length);
+    setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + items.length) % items.length);
+    setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
   };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'ArrowRight') {
+        nextSlide();
+      } else if (event.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
+  // Images from public folder
+  const carouselImages = [
+    {
+      id: 1,
+      src: "/OSB-1.png",
+      alt: "Luxury Fashion Collection 1"
+    },
+    {
+      id: 2,
+      src: "/OSB-2.png",
+      alt: "Luxury Fashion Collection 2"
+    },
+    {
+      id: 3,
+      src: "/OSB-3.png",
+      alt: "Luxury Fashion Collection 3"
+    },
+    {
+      id: 4,
+      src: "/OSB-4.png",
+      alt: "Luxury Fashion Collection 4"
+    }
+  ];
 
   return (
     <motion.section 
@@ -34,60 +72,193 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
             </span>
           </h2>
           <p className="text-2xl text-purple-200">
-            Curated luxury looks for the modern elite
+            Curated looks from our latest fashion collections
+          </p>
+          <p className="text-sm text-purple-300/70 mt-2">
+            Use ← → arrow keys to navigate
           </p>
         </motion.div>
 
         <div className="relative">
-          <div className="overflow-hidden rounded-3xl">
+          <div className="overflow-hidden rounded-3xl shadow-2xl">
             <motion.div 
               className="flex transition-transform duration-500 ease-out"
               animate={{ x: `-${currentSlide * 100}%` }}
             >
-              {items.map((item, index) => (
-                <div key={item.id} className="w-full flex-shrink-0">
+              {carouselImages.map((image, index) => (
+                <div key={image.id} className="w-full flex-shrink-0">
                   <motion.div 
-                    className={`relative h-96 lg:h-[500px] bg-gradient-to-br ${item.gradient} rounded-3xl flex items-center justify-center text-center p-12`}
-                    whileHover={{ scale: 1.02 }}
+                    className="relative w-full h-96 lg:h-[500px] overflow-hidden rounded-3xl"
+                    style={{
+                      background: `
+                        radial-gradient(circle at 20% 80%, rgba(147, 51, 234, 0.4) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(124, 58, 237, 0.2) 0%, transparent 50%),
+                        linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)
+                      `,
+                      boxShadow: `
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+                        0 10px 25px rgba(0, 0, 0, 0.3),
+                        0 20px 40px rgba(147, 51, 234, 0.2)
+                      `
+                    }}
+                    whileHover={{ 
+                      scale: 1.02,
+                      boxShadow: `
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+                        0 15px 35px rgba(0, 0, 0, 0.4),
+                        0 25px 50px rgba(147, 51, 234, 0.3)
+                      `
+                    }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent rounded-3xl" />
-                    
-                    <motion.div 
-                      className="relative z-10"
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ 
-                        opacity: index === currentSlide ? 1 : 0.7,
-                        y: index === currentSlide ? 0 : 30 
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <motion.div 
-                        className="text-6xl mb-6"
+                    {/* 3D Background with Geometric Elements */}
+                    <div className="absolute inset-0 overflow-hidden">
+                      {/* Floating geometric shapes */}
+                      <motion.div
+                        className="absolute top-10 left-10 w-20 h-20 bg-gradient-to-br from-purple-400/30 to-purple-600/20 rounded-2xl"
+                        style={{
+                          transform: 'perspective(1000px) rotateX(45deg) rotateY(45deg)',
+                          boxShadow: '0 10px 20px rgba(147, 51, 234, 0.3)'
+                        }}
                         animate={{
-                          rotate: [0, 5, -5, 0],
+                          rotateY: [45, 90, 45],
+                          rotateX: [45, 60, 45]
+                        }}
+                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      
+                      <motion.div
+                        className="absolute bottom-12 right-12 w-16 h-16 bg-gradient-to-tl from-violet-400/25 to-purple-500/15 rounded-xl"
+                        style={{
+                          transform: 'perspective(800px) rotateX(-30deg) rotateY(-30deg)',
+                          boxShadow: '0 8px 16px rgba(168, 85, 247, 0.25)'
+                        }}
+                        animate={{
+                          rotateY: [-30, -60, -30],
+                          rotateX: [-30, -45, -30]
+                        }}
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                      />
+                      
+                      <motion.div
+                        className="absolute top-1/2 right-8 w-12 h-12 bg-gradient-to-r from-purple-300/20 to-violet-400/15"
+                        style={{
+                          transform: 'perspective(600px) rotateX(60deg) rotateZ(45deg)',
+                          clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                          boxShadow: '0 6px 12px rgba(147, 51, 234, 0.2)'
+                        }}
+                        animate={{
+                          rotateZ: [45, 90, 45],
                           scale: [1, 1.1, 1]
                         }}
-                        transition={{
-                          duration: 4,
-                          repeat: Infinity,
-                          delay: index * 0.5
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                      />
+                      
+                      {/* Subtle grid pattern */}
+                      <div 
+                        className="absolute inset-0 opacity-10"
+                        style={{
+                          backgroundImage: `
+                            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                          `,
+                          backgroundSize: '20px 20px',
+                          transform: 'perspective(1000px) rotateX(60deg)'
                         }}
-                      >
-                        👑
-                      </motion.div>
+                      />
                       
-                      <h3 className="text-4xl md:text-5xl font-black text-white mb-4">
-                        {item.title}
-                      </h3>
+                      {/* Ambient light effects */}
+                      <motion.div
+                        className="absolute top-0 left-0 w-32 h-32 bg-purple-400/20 rounded-full blur-xl"
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0.2, 0.4, 0.2]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      />
                       
-                      <div className="inline-block bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
-                        <span className="text-purple-200 font-semibold">{item.category}</span>
-                      </div>
-                      
-                      <p className="text-xl text-purple-100 max-w-2xl mx-auto leading-relaxed">
-                        {item.description}
-                      </p>
+                      <motion.div
+                        className="absolute bottom-0 right-0 w-40 h-40 bg-violet-500/15 rounded-full blur-2xl"
+                        animate={{
+                          scale: [1, 1.3, 1],
+                          opacity: [0.15, 0.3, 0.15]
+                        }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                      />
+                    </div>
+
+                    {/* Image with proper fit - COMPLETE IMAGE VISIBLE */}
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <motion.img
+                        src={image.src}
+                        alt={image.alt}
+                        className="max-w-full max-h-full object-contain drop-shadow-2xl"
+                        style={{
+                          filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3))'
+                        }}
+                        initial={{ scale: 1.05 }}
+                        animate={{ 
+                          scale: index === currentSlide ? 1 : 1.02,
+                          filter: index === currentSlide 
+                            ? "brightness(1) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4))" 
+                            : "brightness(0.8) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3))"
+                        }}
+                        transition={{ duration: 0.5 }}
+                      />
+                    </div>
+                    
+                    {/* Subtle Gradient Overlay - Enhanced for better visual */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-black/5 pointer-events-none z-20" />
+                    
+                    {/* Premium glass effect border */}
+                    <div 
+                      className="absolute inset-0 rounded-3xl pointer-events-none z-30"
+                      style={{
+                        background: 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)',
+                        border: '1px solid rgba(255,255,255,0.1)'
+                      }}
+                    />
+                    
+                    {/* Animated Border Effect */}
+                    <motion.div
+                      className="absolute inset-0 border-2 border-transparent rounded-3xl z-40"
+                      animate={{
+                        borderColor: index === currentSlide 
+                          ? ["rgba(147, 51, 234, 0.6)", "rgba(168, 85, 247, 0.9)", "rgba(147, 51, 234, 0.6)"]
+                          : "rgba(147, 51, 234, 0.2)"
+                      }}
+                      transition={{ 
+                        duration: 2, 
+                        repeat: index === currentSlide ? Infinity : 0 
+                      }}
+                      style={{
+                        boxShadow: index === currentSlide 
+                          ? '0 0 20px rgba(147, 51, 234, 0.4), inset 0 0 20px rgba(168, 85, 247, 0.1)'
+                          : '0 0 10px rgba(147, 51, 234, 0.2)'
+                      }}
+                    />
+
+                    {/* Fashion Icon Overlay */}
+                    <motion.div 
+                      className="absolute top-6 right-6 w-12 h-12 bg-white/15 backdrop-blur-md rounded-full flex items-center justify-center z-50"
+                      style={{
+                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                      }}
+                      animate={{
+                        scale: index === currentSlide ? [1, 1.2, 1] : 1,
+                        opacity: index === currentSlide ? 1 : 0.7,
+                        rotateY: index === currentSlide ? [0, 180, 360] : 0
+                      }}
+                      transition={{
+                        scale: { duration: 2, repeat: Infinity },
+                        opacity: { duration: 0.5 },
+                        rotateY: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                      }}
+                    >
+                      <span className="text-white text-xl">✨</span>
                     </motion.div>
                   </motion.div>
                 </div>
@@ -95,39 +266,76 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
             </motion.div>
           </div>
 
+          {/* Navigation Buttons */}
           <motion.button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-purple-600/80 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/80 transition-colors duration-300"
-            whileHover={{ scale: 1.1 }}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
+            whileHover={{ scale: 1.1, x: -2 }}
             whileTap={{ scale: 0.9 }}
           >
-            ←
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </motion.button>
           
           <motion.button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-purple-600/80 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/80 transition-colors duration-300"
-            whileHover={{ scale: 1.1 }}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
+            whileHover={{ scale: 1.1, x: 2 }}
             whileTap={{ scale: 0.9 }}
           >
-            →
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </motion.button>
 
-          <div className="flex justify-center space-x-3 mt-8">
-            {items.map((_, index) => (
+          {/* Enhanced Indicators */}
+          <div className="flex justify-center space-x-4 mt-8">
+            {carouselImages.map((_, index) => (
               <motion.button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                className={`relative overflow-hidden rounded-full transition-all duration-300 ${
                   index === currentSlide 
-                    ? 'bg-purple-400 w-8' 
-                    : 'bg-purple-600/50 hover:bg-purple-500/70'
+                    ? 'w-12 h-4 bg-purple-400' 
+                    : 'w-4 h-4 bg-purple-600/50 hover:bg-purple-500/70'
                 }`}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
-              />
+              >
+                {index === currentSlide && (
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-purple-300 to-violet-300"
+                    animate={{
+                      x: ["-100%", "100%"]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                )}
+              </motion.button>
             ))}
           </div>
+
+          {/* Image Counter */}
+          <motion.div 
+            className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2"
+            animate={{
+              scale: [1, 1.05, 1]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <span className="text-white font-medium">
+              {currentSlide + 1} / {carouselImages.length}
+            </span>
+          </motion.div>
         </div>
       </div>
     </motion.section>

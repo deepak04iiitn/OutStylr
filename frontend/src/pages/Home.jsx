@@ -94,7 +94,7 @@ export default function App() {
                 transition={{ duration: 2, repeat: Infinity }}
               />
               <span className="text-purple-300 font-medium text-sm uppercase tracking-wide">
-                Luxury Fashion Revolution
+                Modern Fashion Revolution
               </span>
             </motion.div>
 
@@ -156,7 +156,7 @@ export default function App() {
                   ease: "easeInOut"
                 }}
               >
-                Instant access to luxury outfits.
+                Instant access to categorised outfits.
               </motion.span>
               <br />
               Sophisticated curation. Zero waiting. Maximum elegance.
@@ -182,7 +182,7 @@ export default function App() {
                   transition={{ duration: 0.3 }}
                 />
                 <span className="relative z-10 flex items-center justify-center space-x-3">
-                  <span>Explore Premium Collection</span>
+                  <span>Explore Outfits Collection</span>
                   <motion.span
                     animate={{ x: [0, 5, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -221,7 +221,7 @@ export default function App() {
             >
               {[
                 { number: "100+", label: "Curated Masterpieces", suffix: "" },
-                { number: "24", label: "Hour Luxury Service", suffix: "hr" },
+                { number: "24", label: "Hour Premium Service", suffix: "hr" },
                 { number: "∞", label: "Style Possibilities", suffix: "" }
               ].map((stat, index) => (
                 <motion.div 
@@ -268,6 +268,15 @@ export default function App() {
         setCurrentSlide={setCurrentSlide}
       />
 
+      {/* Bespoke Request Section */}
+      <BespokeRequestSection 
+        customRequest={customRequest}
+        setCustomRequest={setCustomRequest}
+        uploadedImage={uploadedImage}
+        handleImageUpload={handleImageUpload}
+        fileInputRef={fileInputRef}
+      />
+
       {/* Testimonials Section */}
       <TestimonialsSection testimonials={testimonials} />
 
@@ -276,15 +285,6 @@ export default function App() {
         faqs={faqs}
         activeAccordion={activeAccordion}
         setActiveAccordion={setActiveAccordion}
-      />
-
-      {/* Bespoke Request Section */}
-      <BespokeRequestSection 
-        customRequest={customRequest}
-        setCustomRequest={setCustomRequest}
-        uploadedImage={uploadedImage}
-        handleImageUpload={handleImageUpload}
-        fileInputRef={fileInputRef}
       />
 
       {/* Premium Newsletter */}

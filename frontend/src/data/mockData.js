@@ -103,7 +103,7 @@ export const trendingOutfits = [
       id: 1,
       name: "Arjun Malhotra",
       role: "CEO, Tech Startup",
-      content: "OutfitFirst transformed my wardrobe completely. No more endless searching for matching pieces. Pure luxury at my fingertips.",
+      content: "OutStylr transformed my wardrobe completely. No more endless searching for matching pieces. Pure looks at my fingertips.",
       avatar: "👨‍💼",
       rating: 5
     },
@@ -119,7 +119,7 @@ export const trendingOutfits = [
       id: 3,
       name: "Rohit Gupta",
       role: "Investment Banker",
-      content: "Time is money, and OutfitFirst saves me hours. Professional curation meets instant gratification. Absolutely brilliant.",
+      content: "Time is money, and OutStylr saves me hours. Professional curation meets instant gratification. Absolutely brilliant.",
       avatar: "👨‍💻",
       rating: 5
     },
@@ -135,24 +135,24 @@ export const trendingOutfits = [
   
   export const faqs = [
     {
+      question: "What makes OutStylr different from other fashion platforms?",
+      answer: "Unlike traditional stores that sell individual pieces, OutStylr focuses on complete, ready-to-wear outfits. We save you time and styling effort by curating modern, on-trend looks across different categories and occasions."
+    },
+    {
       question: "How does the instant outfit link system work?",
-      answer: "Our AI-powered platform curates complete looks and provides direct purchase links from premium partners. No more hunting across multiple sites - everything you need is right here, instantly accessible."
+      answer: "Our experts curates complete looks and provides direct purchase links of all the products involved in an outfit. No more hunting across multiple sites/apps - everything you need is right here, instantly accessible."
     },
     {
       question: "What makes your styling different from others?",
-      answer: "We combine AI technology with expert human curation to create luxury looks tailored to your style profile. Our sophisticated aesthetic focuses on premium, refined fashion choices that elevate your wardrobe."
+      answer: "We craft modern, hype-worthy outfits inspired by today’s fashion trends. With carefully curated selections across diverse categories and style sections, we bring you elevated looks that keep your wardrobe fresh and on point."
     },
     {
       question: "How quickly can I get a custom outfit created?",
       answer: "Our premium styling team delivers bespoke looks within 24 hours. Upload your inspiration or describe your vision, and we'll create a complete outfit package with direct purchase links."
     },
     {
-      question: "Do you work with luxury brands?",
-      answer: "Yes, we partner with premium and luxury brands to ensure you have access to the finest fashion pieces. Our curated selections focus on quality, style, and sophistication."
-    },
-    {
-      question: "Is the service available internationally?",
-      answer: "Currently, we serve major metropolitan areas with plans for global expansion. Our digital styling service is available worldwide, with localized shopping links for your region."
+      question: "What types of outfits are available?",
+      answer: "We offer curated collections across categories like party wear, office/formals, casual everyday outfits, wedding looks, festive wear, travel styles, date outfit, couple outfit and more."
     }
   ];
   

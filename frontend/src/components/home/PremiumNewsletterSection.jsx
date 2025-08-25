@@ -39,17 +39,29 @@ export default function PremiumNewsletterSection({ email, setEmail }) {
             textShadow: "0 4px 20px rgba(0,0,0,0.5)"
           }}
         >
-          Join the Elite Circle
+          Join Our Fashion Community
         </motion.h2>
         
         <motion.p 
-          className="text-xl md:text-2xl text-purple-100 mb-12"
+          className="text-xl md:text-2xl text-purple-100 mb-8"
           initial={{ y: 30, opacity: 0 }}
           animate={isInView ? { y: 0, opacity: 1 } : { y: 30, opacity: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Exclusive access to luxury trends and premium styling
+          Connect with thousands of fashion enthusiasts sharing the same passion
         </motion.p>
+
+        <motion.div
+          className="mb-12"
+          initial={{ y: 20, opacity: 0 }}
+          animate={isInView ? { y: 0, opacity: 1 } : { y: 20, opacity: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <p className="text-lg text-purple-200 max-w-3xl mx-auto leading-relaxed">
+            Get styling tips, trend alerts, and outfit inspiration from fellow fashion lovers. 
+            Share your looks, discover new brands, and stay ahead of the style curve together!
+          </p>
+        </motion.div>
 
         <motion.div 
           className="flex flex-col sm:flex-row gap-6 max-w-2xl mx-auto"
@@ -61,7 +73,7 @@ export default function PremiumNewsletterSection({ email, setEmail }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your exclusive email address"
+            placeholder="Enter your email to join us"
             className="flex-1 px-8 py-4 rounded-2xl border-0 focus:ring-2 focus:ring-white/50 text-gray-900 text-lg placeholder-gray-500 shadow-lg bg-white/95"
             whileFocus={{ 
               scale: 1.02,
@@ -82,7 +94,7 @@ export default function PremiumNewsletterSection({ email, setEmail }) {
               whileHover={{ scale: 1 }}
               transition={{ duration: 0.3 }}
             />
-            <span className="relative z-10">Join Elite</span>
+            <span className="relative z-10">Join Community</span>
           </motion.button>
         </motion.div>
 
@@ -93,9 +105,9 @@ export default function PremiumNewsletterSection({ email, setEmail }) {
           transition={{ duration: 0.8, delay: 0.8 }}
         >
           {[
-            { icon: "📧", text: "Exclusive Newsletter" },
-            { icon: "💬", text: "WhatsApp VIP" },
-            { icon: "🎯", text: "Personalized Curation" }
+            { icon: "👥", text: "Fashion Community" },
+            { icon: "💡", text: "Style Inspiration" },
+            { icon: "📱", text: "Trend Updates" }
           ].map((item, index) => (
             <motion.div
               key={index}
@@ -111,6 +123,97 @@ export default function PremiumNewsletterSection({ email, setEmail }) {
             >
               <span className="text-2xl">{item.icon}</span>
               <span className="font-medium">{item.text}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Community Stats */}
+        <motion.div 
+          className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
+          initial={{ y: 30, opacity: 0 }}
+          animate={isInView ? { y: 0, opacity: 1 } : { y: 30, opacity: 0 }}
+          transition={{ duration: 0.8, delay: 1.0 }}
+        >
+          {[
+            { number: "10K+", label: "Fashion Enthusiasts" },
+            { number: "500+", label: "Daily Style Shares" },
+            { number: "50+", label: "Countries Worldwide" }
+          ].map((stat, index) => (
+            <motion.div 
+              key={index}
+              className="text-center"
+              whileHover={{ scale: 1.05 }}
+            >
+              <motion.div 
+                className="text-3xl md:text-4xl font-black text-white mb-2"
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: index * 0.5
+                }}
+              >
+                {stat.number}
+              </motion.div>
+              <div className="text-purple-200 font-medium">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Community Benefits */}
+        <motion.div 
+          className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto"
+          initial={{ y: 30, opacity: 0 }}
+          animate={isInView ? { y: 0, opacity: 1 } : { y: 30, opacity: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+        >
+          {[
+            {
+              icon: "🎨",
+              title: "Style Challenges",
+              description: "Weekly themed outfit challenges to boost your creativity"
+            },
+            {
+              icon: "🤝",
+              title: "Fashion Friends",
+              description: "Connect with like-minded fashion enthusiasts worldwide"
+            },
+            {
+              icon: "🏆",
+              title: "Best Dressed",
+              description: "Get featured in our monthly style spotlight"
+            }
+          ].map((benefit, index) => (
+            <motion.div
+              key={index}
+              className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
+              whileHover={{ 
+                scale: 1.02,
+                backgroundColor: "rgba(255,255,255,0.15)"
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div 
+                className="text-4xl mb-4"
+                animate={{
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  delay: index * 0.5
+                }}
+              >
+                {benefit.icon}
+              </motion.div>
+              <h3 className="text-white font-bold text-lg mb-2">
+                {benefit.title}
+              </h3>
+              <p className="text-purple-100 text-sm">
+                {benefit.description}
+              </p>
             </motion.div>
           ))}
         </motion.div>

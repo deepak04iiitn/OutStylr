@@ -224,7 +224,7 @@ export default function TrendingOutfitsSection({ outfits, hoveredOutfit, setHove
               ease: "easeInOut"
             }}
           >
-            Discover 100+ curated luxury outfits
+            Discover 100+ curated outfit collections
           </motion.p>
         </motion.div>
       </div>

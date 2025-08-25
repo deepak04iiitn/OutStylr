@@ -26,7 +26,7 @@ export default function FAQSection({ faqs, activeAccordion, setActiveAccordion }
             </span>
           </h2>
           <p className="text-2xl text-purple-200">
-            Everything you need to know about our luxury service
+            Everything you need to know about our fashion revolution
           </p>
         </motion.div>
 

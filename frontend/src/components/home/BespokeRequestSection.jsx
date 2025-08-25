@@ -26,7 +26,7 @@ export default function BespokeRequestSection({ customRequest, setCustomRequest,
             </span>
           </h2>
           <p className="text-2xl text-purple-200">
-            Our luxury stylists will craft it exclusively for you
+            Our premium stylists will craft it exclusively for you
           </p>
         </motion.div>
 
@@ -154,7 +154,7 @@ export default function BespokeRequestSection({ customRequest, setCustomRequest,
                 ease: "easeInOut"
               }}
             >
-              Luxury styling delivered within 24 hours
+              Modern styling delivered within 24 hours
             </motion.p>
           </motion.div>
         </motion.div>

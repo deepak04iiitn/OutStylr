@@ -130,11 +130,8 @@ export default function Footer() {
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     style={{ backgroundSize: "200% 200%" }}
                   >
-                    OutfitFirst
+                    OutStylr
                   </motion.span>
-                  <span className="text-sm text-purple-300 font-light tracking-widest uppercase">
-                    Luxury Fashion Revolution
-                  </span>
                 </div>
               </motion.div>
               
@@ -142,7 +139,7 @@ export default function Footer() {
                 className="text-purple-200 text-lg mb-8 max-w-md leading-relaxed"
                 variants={itemVariants}
               >
-                Pioneering luxury fashion technology. Sophisticated aesthetics meet instant accessibility. 
+                Pioneering modern fashion technology. Sophisticated aesthetics meet instant accessibility. 
                 Where elegant styling becomes effortless.
               </motion.p>
               
@@ -257,7 +254,7 @@ export default function Footer() {
               <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
                 Join the Elite Circle
               </h3>
-              <p className="text-purple-200 text-lg">Exclusive luxury trends and premium styling access</p>
+              <p className="text-purple-200 text-lg">Exclusive modern trends and premium styling access</p>
             </motion.div>
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto"
@@ -286,7 +283,7 @@ export default function Footer() {
                   whileHover={{ x: "0%" }}
                   transition={{ duration: 0.3 }}
                 />
-                <span className="relative z-10">Join VIP</span>
+                <span className="relative z-10">Join Community</span>
               </motion.button>
             </motion.div>
           </div>
@@ -307,11 +304,11 @@ export default function Footer() {
             >
               © 2025 OutfitFirst. All rights reserved. 
               <span className="ml-2 bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent font-medium">
-                Luxury redefined.
+                Fashion redefined.
               </span>
             </motion.div>
             <div className="flex space-x-8 text-sm">
-              {['Privacy Policy', 'Terms of Service', 'VIP Support', 'WhatsApp Bot'].map((link, index) => (
+              {['Privacy Policy', 'Terms of Service', 'Outfit Store', 'WhatsApp Bot'].map((link, index) => (
                 <motion.a 
                   key={link}
                   href="#" 
