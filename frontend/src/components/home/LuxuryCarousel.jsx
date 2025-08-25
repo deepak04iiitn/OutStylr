@@ -8,6 +8,9 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef(null);
 
+  // 2 seconds interval for auto-navigation
+  const AUTO_ADVANCE_INTERVAL = 2000;
+
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
   };
@@ -16,12 +19,12 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
     setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
   };
 
-  // Auto-navigation effect
+  // Auto-navigation effect with 2-second interval
   useEffect(() => {
     if (isAutoPlaying && !isPaused && isInView) {
       intervalRef.current = setInterval(() => {
         nextSlide();
-      }, 4000); // Auto-advance every 4 seconds
+      }, AUTO_ADVANCE_INTERVAL); // 2 seconds
 
       return () => {
         if (intervalRef.current) {
@@ -35,7 +38,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
     }
   }, [isAutoPlaying, isPaused, isInView, currentSlide]);
 
-  // Keyboard navigation
+  // Keyboard navigation (kept for accessibility)
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key === 'ArrowRight') {
@@ -89,31 +92,30 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
   return (
     <motion.section 
       ref={ref}
-      className="py-20 lg:py-32 relative overflow-hidden bg-gradient-to-br from-slate-800/30 to-purple-900/10"
+      className="py-12 sm:py-16 lg:py-32 relative overflow-hidden bg-gradient-to-br from-slate-800/30 to-purple-900/10"
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16"
           initial={{ y: 50, opacity: 0 }}
           animate={isInView ? { y: 0, opacity: 1 } : { y: 50, opacity: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6">
             Your Style{' '}
             <span className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
               Simplified
             </span>
           </h2>
-          <p className="text-2xl text-purple-200">
+          <p className="text-lg sm:text-xl lg:text-2xl text-purple-200">
             Outfit-first shopping experience with instant styling solutions
           </p>
-          
         </motion.div>
 
         <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <div className="overflow-hidden rounded-3xl shadow-2xl">
+          <div className="overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl">
             <motion.div 
               className="flex transition-transform duration-500 ease-out"
               animate={{ x: `-${currentSlide * 100}%` }}
@@ -121,7 +123,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
               {carouselImages.map((image, index) => (
                 <div key={image.id} className="w-full flex-shrink-0">
                   <motion.div 
-                    className="relative w-full h-96 lg:h-[500px] overflow-hidden rounded-3xl"
+                    className="relative w-full h-64 sm:h-80 lg:h-96 xl:h-[500px] overflow-hidden rounded-2xl sm:rounded-3xl"
                     style={{
                       background: `
                         radial-gradient(circle at 20% 80%, rgba(147, 51, 234, 0.4) 0%, transparent 50%),
@@ -149,12 +151,12 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                   >
                     {/* 3D Background with Geometric Elements */}
                     <div className="absolute inset-0 overflow-hidden">
-                      {/* Floating geometric shapes */}
+                      {/* Floating geometric shapes - reduced for mobile performance */}
                       <motion.div
-                        className="absolute top-10 left-10 w-20 h-20 bg-gradient-to-br from-purple-400/30 to-purple-600/20 rounded-2xl"
+                        className="absolute top-4 sm:top-10 left-4 sm:left-10 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-purple-400/30 to-purple-600/20 rounded-xl sm:rounded-2xl"
                         style={{
                           transform: 'perspective(1000px) rotateX(45deg) rotateY(45deg)',
-                          boxShadow: '0 10px 20px rgba(147, 51, 234, 0.3)'
+                          boxShadow: '0 5px 15px rgba(147, 51, 234, 0.3)'
                         }}
                         animate={{
                           rotateY: [45, 90, 45],
@@ -164,10 +166,10 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                       />
                       
                       <motion.div
-                        className="absolute bottom-12 right-12 w-16 h-16 bg-gradient-to-tl from-violet-400/25 to-purple-500/15 rounded-xl"
+                        className="absolute bottom-4 sm:bottom-12 right-4 sm:right-12 w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-tl from-violet-400/25 to-purple-500/15 rounded-lg sm:rounded-xl"
                         style={{
                           transform: 'perspective(800px) rotateX(-30deg) rotateY(-30deg)',
-                          boxShadow: '0 8px 16px rgba(168, 85, 247, 0.25)'
+                          boxShadow: '0 4px 12px rgba(168, 85, 247, 0.25)'
                         }}
                         animate={{
                           rotateY: [-30, -60, -30],
@@ -176,36 +178,9 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                       />
                       
-                      <motion.div
-                        className="absolute top-1/2 right-8 w-12 h-12 bg-gradient-to-r from-purple-300/20 to-violet-400/15"
-                        style={{
-                          transform: 'perspective(600px) rotateX(60deg) rotateZ(45deg)',
-                          clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-                          boxShadow: '0 6px 12px rgba(147, 51, 234, 0.2)'
-                        }}
-                        animate={{
-                          rotateZ: [45, 90, 45],
-                          scale: [1, 1.1, 1]
-                        }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                      />
-                      
-                      {/* Subtle grid pattern */}
-                      <div 
-                        className="absolute inset-0 opacity-10"
-                        style={{
-                          backgroundImage: `
-                            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-                          `,
-                          backgroundSize: '20px 20px',
-                          transform: 'perspective(1000px) rotateX(60deg)'
-                        }}
-                      />
-                      
                       {/* Ambient light effects */}
                       <motion.div
-                        className="absolute top-0 left-0 w-32 h-32 bg-purple-400/20 rounded-full blur-xl"
+                        className="absolute top-0 left-0 w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-purple-400/20 rounded-full blur-xl"
                         animate={{
                           scale: [1, 1.5, 1],
                           opacity: [0.2, 0.4, 0.2]
@@ -214,7 +189,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                       />
                       
                       <motion.div
-                        className="absolute bottom-0 right-0 w-40 h-40 bg-violet-500/15 rounded-full blur-2xl"
+                        className="absolute bottom-0 right-0 w-20 h-20 sm:w-28 sm:h-28 lg:w-40 lg:h-40 bg-violet-500/15 rounded-full blur-2xl"
                         animate={{
                           scale: [1, 1.3, 1],
                           opacity: [0.15, 0.3, 0.15]
@@ -224,7 +199,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                     </div>
 
                     {/* Image with proper fit - COMPLETE IMAGE VISIBLE */}
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <div className="absolute inset-0 flex items-center justify-center z-10 p-4 sm:p-6">
                       <motion.img
                         src={image.src}
                         alt={image.alt}
@@ -243,12 +218,12 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                       />
                     </div>
                     
-                    {/* Subtle Gradient Overlay - Enhanced for better visual */}
+                    {/* Subtle Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-black/5 pointer-events-none z-20" />
                     
                     {/* Premium glass effect border */}
                     <div 
-                      className="absolute inset-0 rounded-3xl pointer-events-none z-30"
+                      className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none z-30"
                       style={{
                         background: 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)',
                         border: '1px solid rgba(255,255,255,0.1)'
@@ -257,7 +232,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                     
                     {/* Animated Border Effect */}
                     <motion.div
-                      className="absolute inset-0 border-2 border-transparent rounded-3xl z-40"
+                      className="absolute inset-0 border-2 border-transparent rounded-2xl sm:rounded-3xl z-40"
                       animate={{
                         borderColor: index === currentSlide 
                           ? ["rgba(147, 51, 234, 0.6)", "rgba(168, 85, 247, 0.9)", "rgba(147, 51, 234, 0.6)"]
@@ -276,9 +251,9 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
 
                     {/* Fashion Icon Overlay */}
                     <motion.div 
-                      className="absolute top-6 right-6 w-12 h-12 bg-white/15 backdrop-blur-md rounded-full flex items-center justify-center z-50"
+                      className="absolute top-3 right-3 sm:top-6 sm:right-6 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/15 backdrop-blur-md rounded-full flex items-center justify-center z-50"
                       style={{
-                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                       }}
                       animate={{
                         scale: index === currentSlide ? [1, 1.2, 1] : 1,
@@ -291,7 +266,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                         rotateY: { duration: 3, repeat: Infinity, ease: "easeInOut" }
                       }}
                     >
-                      <span className="text-white text-xl">✨</span>
+                      <span className="text-white text-sm sm:text-lg lg:text-xl">✨</span>
                     </motion.div>
                   </motion.div>
                 </div>
@@ -299,18 +274,19 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
             </motion.div>
           </div>
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - HIDDEN ON MOBILE/TABLET, VISIBLE ON LARGE SCREENS */}
           <motion.button
             onClick={() => {
               prevSlide();
               setIsPaused(true);
               setTimeout(() => setIsPaused(false), 8000);
             }}
-            className="cursor-pointer absolute left-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
+            className="hidden lg:flex cursor-pointer absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 lg:w-14 lg:h-14 bg-purple-600/90 backdrop-blur-sm rounded-full items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
             whileHover={{ scale: 1.1, x: -2 }}
             whileTap={{ scale: 0.9 }}
+            aria-label="Previous slide"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </motion.button>
@@ -321,17 +297,18 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
               setIsPaused(true);
               setTimeout(() => setIsPaused(false), 8000);
             }}
-            className="cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
+            className="hidden lg:flex cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 lg:w-14 lg:h-14 bg-purple-600/90 backdrop-blur-sm rounded-full items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
             whileHover={{ scale: 1.1, x: 2 }}
             whileTap={{ scale: 0.9 }}
+            aria-label="Next slide"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </motion.button>
 
           {/* Enhanced Indicators with Auto-play Progress */}
-          <div className="flex justify-center space-x-4 mt-8">
+          <div className="flex justify-center space-x-2 sm:space-x-4 mt-6 sm:mt-8">
             {carouselImages.map((_, index) => (
               <motion.button
                 key={index}
@@ -342,8 +319,8 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                 }}
                 className={`relative overflow-hidden rounded-full transition-all duration-300 ${
                   index === currentSlide 
-                    ? 'w-12 h-4 bg-purple-400' 
-                    : 'w-4 h-4 bg-purple-600/50 hover:bg-purple-500/70'
+                    ? 'w-8 sm:w-10 lg:w-12 h-3 sm:h-4 bg-purple-400' 
+                    : 'w-3 sm:w-4 h-3 sm:h-4 bg-purple-600/50 hover:bg-purple-500/70'
                 }`}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
@@ -369,7 +346,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 1 }}
                         transition={{
-                          duration: 4, // Match auto-advance interval
+                          duration: AUTO_ADVANCE_INTERVAL / 1000, // Convert to seconds
                           ease: "linear",
                           repeat: Infinity
                         }}
@@ -385,18 +362,18 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
           {/* Auto-play Control Button */}
           <motion.button
             onClick={() => setIsAutoPlaying(prev => !prev)}
-            className="absolute top-6 left-6 w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-all duration-300 shadow-lg z-50"
+            className="absolute top-3 left-3 sm:top-6 sm:left-6 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-all duration-300 shadow-lg z-50"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             title={isAutoPlaying ? 'Pause auto-play' : 'Resume auto-play'}
           >
             {isAutoPlaying ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
                 <rect x="14" y="4" width="4" height="16" fill="currentColor"/>
               </svg>
             ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <polygon points="5,3 19,12 5,21" fill="currentColor"/>
               </svg>
             )}
@@ -404,7 +381,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
 
           {/* Image Counter */}
           <motion.div 
-            className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2"
+            className="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 sm:px-4 sm:py-2"
             animate={{
               scale: [1, 1.05, 1]
             }}
@@ -414,11 +391,12 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
               ease: "easeInOut"
             }}
           >
-            <span className="text-white font-medium">
+            <span className="text-white font-medium text-xs sm:text-sm">
               {currentSlide + 1} / {carouselImages.length}
             </span>
           </motion.div>
         </div>
+
       </div>
     </motion.section>
   );
