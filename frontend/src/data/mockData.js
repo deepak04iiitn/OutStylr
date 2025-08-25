@@ -158,9 +158,9 @@ export const trendingOutfits = [
   
   export const luxuryFeatures = [
     { 
-      icon: "✨", 
-      title: "AI-Curated Excellence", 
-      description: "Machine learning powered by fashion experts"
+      icon: "👨‍👩‍👧‍👦", 
+      title: "Fashion for All", 
+      description: "Trendy outfits across men, women, and kids" 
     },
     { 
       icon: "🎨", 
@@ -173,10 +173,10 @@ export const trendingOutfits = [
       description: "Zero waiting. Immediate access to complete looks"
     },
     { 
-      icon: "💎", 
-      title: "Premium Partnerships", 
-      description: "Exclusive access to luxury and designer brands"
-    }
+      icon: "👗", 
+      title: "Always in Style", 
+      description: "From casual to festive, styles curated for every moment" 
+    },
   ];
   
   export const containerVariants = {

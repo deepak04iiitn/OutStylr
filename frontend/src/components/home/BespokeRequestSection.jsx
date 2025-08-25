@@ -120,7 +120,7 @@ export default function BespokeRequestSection({ customRequest, setCustomRequest,
             transition={{ duration: 0.8, delay: 1.0 }}
           >
             <motion.button 
-              className="px-12 py-5 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white rounded-2xl text-xl font-bold shadow-lg relative overflow-hidden group"
+              className="cursor-pointer px-12 py-5 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white rounded-2xl text-xl font-bold shadow-lg relative overflow-hidden group"
               whileHover={{ 
                 scale: 1.05,
                 boxShadow: "0 25px 50px -12px rgba(147, 51, 234, 0.6)"

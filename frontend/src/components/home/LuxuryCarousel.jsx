@@ -306,7 +306,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
               setIsPaused(true);
               setTimeout(() => setIsPaused(false), 8000);
             }}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
+            className="cursor-pointer absolute left-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
             whileHover={{ scale: 1.1, x: -2 }}
             whileTap={{ scale: 0.9 }}
           >
@@ -321,7 +321,7 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
               setIsPaused(true);
               setTimeout(() => setIsPaused(false), 8000);
             }}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
+            className="cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
             whileHover={{ scale: 1.1, x: 2 }}
             whileTap={{ scale: 0.9 }}
           >

@@ -81,7 +81,7 @@ export default function PremiumNewsletterSection({ email, setEmail }) {
             }}
           />
           <motion.button 
-            className="px-10 py-4 bg-white text-purple-800 rounded-2xl font-bold text-lg shadow-lg relative overflow-hidden group"
+            className="cursor-pointer px-10 py-4 bg-white text-purple-800 rounded-2xl font-bold text-lg shadow-lg relative overflow-hidden group"
             whileHover={{ 
               scale: 1.05,
               boxShadow: "0 25px 50px -12px rgba(255,255,255,0.4)"

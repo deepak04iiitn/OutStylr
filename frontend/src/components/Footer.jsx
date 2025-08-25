@@ -189,7 +189,7 @@ export default function Footer() {
                   Get instant outfit recommendations 24/7
                 </p>
                 <motion.button
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-500 transition-colors"
+                  className="cursor-pointer px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-500 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -270,7 +270,7 @@ export default function Footer() {
                 }}
               />
               <motion.button 
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl font-bold hover:shadow-lg transition-all duration-300 relative overflow-hidden group"
+                className="cursor-pointer px-8 py-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl font-bold hover:shadow-lg transition-all duration-300 relative overflow-hidden group"
                 whileHover={{ 
                   scale: 1.05,
                   boxShadow: "0 25px 50px -12px rgba(147, 51, 234, 0.5)"

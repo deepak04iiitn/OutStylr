@@ -41,7 +41,7 @@ export default function FAQSection({ faqs, activeAccordion, setActiveAccordion }
             >
               <motion.button
                 onClick={() => setActiveAccordion(activeAccordion === index ? -1 : index)}
-                className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-purple-900/20 transition-colors duration-300"
+                className="cursor-pointer w-full px-8 py-6 text-left flex items-center justify-between hover:bg-purple-900/20 transition-colors duration-300"
                 whileHover={{ backgroundColor: "rgba(88, 28, 135, 0.1)" }}
               >
                 <h3 className="text-xl font-bold text-white pr-4">
