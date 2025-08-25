@@ -67,22 +67,22 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
     {
       id: 1,
       src: "/OSB-1.png",
-      alt: "Luxury Fashion Collection 1"
+      alt: "Outfit-First Shopping - Your Style, Simplified"
     },
     {
       id: 2,
       src: "/OSB-2.png",
-      alt: "Luxury Fashion Collection 2"
+      alt: "No More Link Please - Unlock Instant Outfits"
     },
     {
       id: 3,
       src: "/OSB-3.png",
-      alt: "Luxury Fashion Collection 3"
+      alt: "Upload the Outfit - Get Personalized Styling"
     },
     {
       id: 4,
       src: "/OSB-4.png",
-      alt: "Luxury Fashion Collection 4"
+      alt: "Get Trending Outfits - Curated for Occasions"
     }
   ];
 
@@ -101,31 +101,15 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
-            Featured{' '}
+            Your Style{' '}
             <span className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
-              Collections
+              Simplified
             </span>
           </h2>
           <p className="text-2xl text-purple-200">
-            Curated looks from our latest fashion collections
+            Outfit-first shopping experience with instant styling solutions
           </p>
-          <div className="flex items-center justify-center gap-4 mt-4">
-            <p className="text-sm text-purple-300/70">
-              Use ← → arrow keys to navigate
-            </p>
-            <span className="text-purple-400/50">•</span>
-            <p className="text-sm text-purple-300/70">
-              Spacebar to {isAutoPlaying ? 'pause' : 'resume'} auto-play
-            </p>
-            <motion.div
-              className={`w-2 h-2 rounded-full ${isAutoPlaying && !isPaused ? 'bg-green-400' : 'bg-red-400'}`}
-              animate={{
-                scale: isAutoPlaying && !isPaused ? [1, 1.3, 1] : 1,
-                opacity: isAutoPlaying && !isPaused ? [0.5, 1, 0.5] : 0.7
-              }}
-              transition={{ duration: 1, repeat: Infinity }}
-            />
-          </div>
+          
         </motion.div>
 
         <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
