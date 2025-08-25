@@ -1,9 +1,12 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const intervalRef = useRef(null);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
@@ -13,19 +16,51 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
     setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
   };
 
+  // Auto-navigation effect
+  useEffect(() => {
+    if (isAutoPlaying && !isPaused && isInView) {
+      intervalRef.current = setInterval(() => {
+        nextSlide();
+      }, 4000); // Auto-advance every 4 seconds
+
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      };
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    }
+  }, [isAutoPlaying, isPaused, isInView, currentSlide]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key === 'ArrowRight') {
         nextSlide();
+        // Pause auto-play temporarily when user manually navigates
+        setIsPaused(true);
+        setTimeout(() => setIsPaused(false), 8000);
       } else if (event.key === 'ArrowLeft') {
         prevSlide();
+        // Pause auto-play temporarily when user manually navigates
+        setIsPaused(true);
+        setTimeout(() => setIsPaused(false), 8000);
+      } else if (event.key === ' ') { // Spacebar to toggle auto-play
+        event.preventDefault();
+        setIsAutoPlaying(prev => !prev);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
+
+  // Mouse enter/leave handlers for pause on hover
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
 
   // Images from public folder
   const carouselImages = [
@@ -74,12 +109,26 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
           <p className="text-2xl text-purple-200">
             Curated looks from our latest fashion collections
           </p>
-          <p className="text-sm text-purple-300/70 mt-2">
-            Use ← → arrow keys to navigate
-          </p>
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <p className="text-sm text-purple-300/70">
+              Use ← → arrow keys to navigate
+            </p>
+            <span className="text-purple-400/50">•</span>
+            <p className="text-sm text-purple-300/70">
+              Spacebar to {isAutoPlaying ? 'pause' : 'resume'} auto-play
+            </p>
+            <motion.div
+              className={`w-2 h-2 rounded-full ${isAutoPlaying && !isPaused ? 'bg-green-400' : 'bg-red-400'}`}
+              animate={{
+                scale: isAutoPlaying && !isPaused ? [1, 1.3, 1] : 1,
+                opacity: isAutoPlaying && !isPaused ? [0.5, 1, 0.5] : 0.7
+              }}
+              transition={{ duration: 1, repeat: Infinity }}
+            />
+          </div>
         </motion.div>
 
-        <div className="relative">
+        <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <div className="overflow-hidden rounded-3xl shadow-2xl">
             <motion.div 
               className="flex transition-transform duration-500 ease-out"
@@ -268,7 +317,11 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
 
           {/* Navigation Buttons */}
           <motion.button
-            onClick={prevSlide}
+            onClick={() => {
+              prevSlide();
+              setIsPaused(true);
+              setTimeout(() => setIsPaused(false), 8000);
+            }}
             className="absolute left-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
             whileHover={{ scale: 1.1, x: -2 }}
             whileTap={{ scale: 0.9 }}
@@ -279,7 +332,11 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
           </motion.button>
           
           <motion.button
-            onClick={nextSlide}
+            onClick={() => {
+              nextSlide();
+              setIsPaused(true);
+              setTimeout(() => setIsPaused(false), 8000);
+            }}
             className="absolute right-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-purple-600/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-500/90 transition-all duration-300 shadow-lg z-10"
             whileHover={{ scale: 1.1, x: 2 }}
             whileTap={{ scale: 0.9 }}
@@ -289,12 +346,16 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
             </svg>
           </motion.button>
 
-          {/* Enhanced Indicators */}
+          {/* Enhanced Indicators with Auto-play Progress */}
           <div className="flex justify-center space-x-4 mt-8">
             {carouselImages.map((_, index) => (
               <motion.button
                 key={index}
-                onClick={() => setCurrentSlide(index)}
+                onClick={() => {
+                  setCurrentSlide(index);
+                  setIsPaused(true);
+                  setTimeout(() => setIsPaused(false), 8000);
+                }}
                 className={`relative overflow-hidden rounded-full transition-all duration-300 ${
                   index === currentSlide 
                     ? 'w-12 h-4 bg-purple-400' 
@@ -304,21 +365,58 @@ export default function LuxuryCarousel({ items, currentSlide, setCurrentSlide })
                 whileTap={{ scale: 0.9 }}
               >
                 {index === currentSlide && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-purple-300 to-violet-300"
-                    animate={{
-                      x: ["-100%", "100%"]
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "linear"
-                    }}
-                  />
+                  <>
+                    {/* Background gradient */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-purple-300 to-violet-300"
+                      animate={{
+                        x: ["-100%", "100%"]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    />
+                    {/* Auto-play progress bar */}
+                    {isAutoPlaying && !isPaused && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-400"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{
+                          duration: 4, // Match auto-advance interval
+                          ease: "linear",
+                          repeat: Infinity
+                        }}
+                        style={{ transformOrigin: "left" }}
+                      />
+                    )}
+                  </>
                 )}
               </motion.button>
             ))}
           </div>
+
+          {/* Auto-play Control Button */}
+          <motion.button
+            onClick={() => setIsAutoPlaying(prev => !prev)}
+            className="absolute top-6 left-6 w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-all duration-300 shadow-lg z-50"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            title={isAutoPlaying ? 'Pause auto-play' : 'Resume auto-play'}
+          >
+            {isAutoPlaying ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
+                <rect x="14" y="4" width="4" height="16" fill="currentColor"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+              </svg>
+            )}
+          </motion.button>
 
           {/* Image Counter */}
           <motion.div 
