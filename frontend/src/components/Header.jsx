@@ -245,46 +245,46 @@ export default function Header() {
               {/* Conditional Rendering: Sign In Button OR Profile Dropdown (Desktop Only) */}
               {currentUser ? (
                 // Simple Profile Button for Desktop
-<Link to="/profile">
-  <motion.button
-    className="cursor-pointer hidden lg:flex items-center space-x-3 p-2 rounded-full hover:bg-purple-900/20 transition-all duration-300"
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    variants={itemVariants}
-  >
-    {/* Profile Avatar */}
-    <motion.div 
-      className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-purple-400"
-      animate={{
-        borderColor: [
-          "rgba(147, 51, 234, 0.6)",
-          "rgba(168, 85, 247, 0.8)",
-          "rgba(147, 51, 234, 0.6)"
-        ]
-      }}
-      transition={{ duration: 3, repeat: Infinity }}
-    >
-      {currentUser.avatar ? (
-        <img 
-          src={currentUser.avatar} 
-          alt={currentUser.username}
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <div className="w-full h-full bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center">
-          <span className="text-white font-bold text-sm">
-            {currentUser.username?.charAt(0).toUpperCase() || currentUser.email?.charAt(0).toUpperCase()}
-          </span>
-        </div>
-      )}
-    </motion.div>
-    
-    {/* Username */}
-    <span className="text-purple-200 font-medium">
-      {currentUser.username || currentUser.email?.split('@')[0]}
-    </span>
-  </motion.button>
-</Link>
+                <Link to="/profile">
+                  <motion.button
+                    className="cursor-pointer hidden lg:flex items-center space-x-3 p-2 rounded-full hover:bg-purple-900/20 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    variants={itemVariants}
+                  >
+                    {/* Profile Avatar */}
+                    <motion.div 
+                      className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-purple-400"
+                      animate={{
+                        borderColor: [
+                          "rgba(147, 51, 234, 0.6)",
+                          "rgba(168, 85, 247, 0.8)",
+                          "rgba(147, 51, 234, 0.6)"
+                        ]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    >
+                      {currentUser.avatar ? (
+                        <img 
+                          src={currentUser.avatar} 
+                          alt={currentUser.username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">
+                            {currentUser.username?.charAt(0).toUpperCase() || currentUser.email?.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </motion.div>
+                    
+                    {/* Username */}
+                    <span className="text-purple-200 font-medium">
+                      {currentUser.username || currentUser.email?.split('@')[0]}
+                    </span>
+                  </motion.button>
+                </Link>
               ) : (
                 // Sign In Button for Non-Authenticated Users (Desktop Only)
                 <Link to={'/sign-in'}>
