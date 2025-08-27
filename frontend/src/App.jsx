@@ -12,28 +12,6 @@ import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './pages/Dashboard';
 
 export default function App() {
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const expiry = localStorage.getItem('tokenExpiry');
-        if (token && expiry) {
-            const timeLeft = Number(expiry) - Date.now();
-            if (timeLeft > 0) {
-                setTimeout(() => {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('tokenExpiry');
-                    dispatch(signoutSuccess());
-                }, timeLeft);
-            } else {
-                localStorage.removeItem('token');
-                localStorage.removeItem('tokenExpiry');
-                dispatch(signoutSuccess());
-            }
-        } else {
-            dispatch(signoutSuccess());
-        }
-    }, [dispatch]);
 
     return (
         <BrowserRouter>
