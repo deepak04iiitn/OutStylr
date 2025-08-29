@@ -73,7 +73,6 @@ export const createOutfit = async (req, res, next) => {
 
         const newOutfit = new Outfit({
             userId: req.user.id,
-            userFullName: req.user.fullName,
             image: req.file.path, // Cloudinary URL
             category,
             section,
@@ -111,7 +110,6 @@ export const getOutfits = async (req, res, next) => {
         if (req.query.type) filter.type = req.query.type;
         if (req.query.searchTerm) {
             filter.$or = [
-                { userFullName: { $regex: req.query.searchTerm, $options: 'i' } },
                 { description: { $regex: req.query.searchTerm, $options: 'i' } },
                 { tags: { $in: [new RegExp(req.query.searchTerm, 'i')] } }
             ];

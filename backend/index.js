@@ -7,6 +7,7 @@ import path from 'path';
 
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
+import outfitRoutes from './routes/outfit.routes.js';
 import cartRoutes from './routes/cart.route.js';
 
 
@@ -33,6 +34,7 @@ mongoose.connect(MONGODB_URI)
 
 app.use('/backend/user', userRoutes);
 app.use('/backend/auth', authRoutes);
+app.use('/backend/outfit', outfitRoutes);
 app.use('/backend/cart', cartRoutes);
 
 

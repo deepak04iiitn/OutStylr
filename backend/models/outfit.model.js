@@ -11,7 +11,7 @@ const replySchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    userFullName: {
+    username: {
         type: String,
         required: true
     },
@@ -75,7 +75,7 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    userFullName: {
+    username: {
         type: String,
         required: true
     },
@@ -107,10 +107,6 @@ const commentSchema = new mongoose.Schema({
 // Main Outfit Schema
 const outfitSchema = new mongoose.Schema({
     userId: {
-        type: String,
-        required: true
-    },
-    userFullName: {
         type: String,
         required: true
     },
@@ -158,12 +154,12 @@ const outfitSchema = new mongoose.Schema({
     items: {
         type: [itemSchema],
         required: true,
-        validate: {
-            validator: function(items) {
-                return items.length === this.numberOfItems;
-            },
-            message: 'Number of items must match numberOfItems field'
-        }
+        // validate: {
+        //     validator: function(items) {
+        //         return items.length === this.numberOfItems;
+        //     },
+        //     message: 'Number of items must match numberOfItems field'
+        // }
     },
     rateLook: {
         type: Number,
