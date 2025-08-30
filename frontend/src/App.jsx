@@ -14,9 +14,31 @@ import Outfit from './pages/Outfit';
 import Cart from './pages/Cart';
 import OutfitDetails from './pages/OutfitDetails';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { checkTokenExpiry } from './utils/tokenUtils';
+
+
 // Create a wrapper component to access useLocation
 function AppContent() {
     const location = useLocation();
+    const dispatch = useDispatch();
+    const { currentUser } = useSelector(state => state.user);
+
+
+    useEffect(() => {
+        let tokenCheckInterval;
+        
+        if (currentUser) {
+            // Start checking token expiry
+            tokenCheckInterval = checkTokenExpiry(dispatch);
+        }
+        
+        return () => {
+            if (tokenCheckInterval) {
+                clearInterval(tokenCheckInterval);
+            }
+        };
+    }, [currentUser, dispatch]);
     
     // Pages where header should be hidden
     const hideHeaderRoutes = ['/dashboard'];

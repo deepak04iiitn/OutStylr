@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Heart, MessageCircle, ThumbsDown, Search, Filter, SortDesc } from 'lucide-react';
+import { Heart, MessageCircle, ThumbsDown, Search, Filter, SortDesc, X, ChevronDown } from 'lucide-react';
 
 export default function Outfit() {
     const [outfits, setOutfits] = useState([]);
@@ -15,6 +15,8 @@ export default function Outfit() {
         sort: 'desc'
     });
     const [showFilters, setShowFilters] = useState(false);
+    const [hoveredCard, setHoveredCard] = useState(null);
+    const [searchFocused, setSearchFocused] = useState(false);
     const observerRef = useRef();
     
     const categories = [
@@ -125,193 +127,230 @@ export default function Outfit() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
-            <div className="container mx-auto px-4 py-8">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                        Discover Amazing Outfits
-                    </h1>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
+        <div className="min-h-screen relative overflow-hidden">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+            </div>
+
+            <div className="container mx-auto px-4 py-8 relative z-10">
+                {/* Header with Animation */}
+                <div className="text-center mb-12 animate-fade-in-up mt-20">
+                    <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
                         Browse through our curated collection of stylish outfits for every occasion
                     </p>
+                    <div className="mt-6 h-1 w-24 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full"></div>
                 </div>
 
-                {/* Search and Filter Bar */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+                {/* Enhanced Search and Filter Bar */}
+                <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 mb-8 transform transition-all duration-300 hover:shadow-2xl animate-fade-in-up delay-200">
                     {/* Search Bar */}
-                    <div className="flex gap-4 mb-4">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                        <div className={`flex-1 relative transition-all duration-300 ${searchFocused ? 'scale-105' : ''}`}>
+                            <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${searchFocused ? 'text-purple-500' : 'text-gray-400'}`} />
                             <input
                                 type="text"
                                 placeholder="Search outfits, tags, descriptions..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                onFocus={() => setSearchFocused(true)}
+                                onBlur={() => setSearchFocused(false)}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 bg-white/50 backdrop-blur-sm text-gray-800 placeholder-gray-500"
                             />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            )}
                         </div>
                         <button
                             type="button"
                             onClick={() => setShowFilters(!showFilters)}
-                            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                            className={`px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 ${showFilters ? 'ring-4 ring-purple-500/30' : ''}`}
                         >
                             <Filter className="w-5 h-5" />
-                            Filters
+                            <span className="hidden sm:inline">Filters</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
                         </button>
                     </div>
 
-                    {/* Filter Panel */}
-                    {showFilters && (
-                        <div className="border-t pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    {/* Enhanced Filter Panel */}
+                    <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="border-t border-gray-200 pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                             {/* Category Filter */}
-                            <select
-                                value={filters.category}
-                                onChange={(e) => handleFilterChange('category', e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                            >
-                                <option value="">All Categories</option>
-                                {categories.map(category => (
-                                    <option key={category} value={category}>{category}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={filters.category}
+                                    onChange={(e) => handleFilterChange('category', e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 bg-white/50 backdrop-blur-sm appearance-none cursor-pointer"
+                                >
+                                    <option value="">All Categories</option>
+                                    {categories.map(category => (
+                                        <option key={category} value={category}>{category}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            </div>
 
                             {/* Section Filter */}
-                            <select
-                                value={filters.section}
-                                onChange={(e) => handleFilterChange('section', e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                            >
-                                <option value="">All Sections</option>
-                                {sections.map(section => (
-                                    <option key={section} value={section}>{section}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={filters.section}
+                                    onChange={(e) => handleFilterChange('section', e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 bg-white/50 backdrop-blur-sm appearance-none cursor-pointer"
+                                >
+                                    <option value="">All Sections</option>
+                                    {sections.map(section => (
+                                        <option key={section} value={section}>{section}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            </div>
 
                             {/* Type Filter */}
-                            <select
-                                value={filters.type}
-                                onChange={(e) => handleFilterChange('type', e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                            >
-                                <option value="">All Types</option>
-                                {types.map(type => (
-                                    <option key={type} value={type}>{type}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={filters.type}
+                                    onChange={(e) => handleFilterChange('type', e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 bg-white/50 backdrop-blur-sm appearance-none cursor-pointer"
+                                >
+                                    <option value="">All Types</option>
+                                    {types.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            </div>
 
                             {/* Sort By */}
-                            <select
-                                value={filters.sortBy}
-                                onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                            >
-                                {sortOptions.map(option => (
-                                    <option key={option.value} value={option.value}>{option.label}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={filters.sortBy}
+                                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 bg-white/50 backdrop-blur-sm appearance-none cursor-pointer"
+                                >
+                                    {sortOptions.map(option => (
+                                        <option key={option.value} value={option.value}>{option.label}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            </div>
 
                             {/* Sort Direction */}
-                            <div className="flex gap-2">
+                            <div className="sm:col-span-2 lg:col-span-1">
                                 <button
                                     type="button"
                                     onClick={() => handleFilterChange('sort', filters.sort === 'asc' ? 'desc' : 'asc')}
-                                    className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                    className="w-full px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105"
                                 >
-                                    <SortDesc className={`w-4 h-4 ${filters.sort === 'desc' ? 'rotate-180' : ''} transition-transform`} />
-                                    {filters.sort === 'asc' ? 'Ascending' : 'Descending'}
+                                    <SortDesc className={`w-4 h-4 transition-transform duration-300 ${filters.sort === 'desc' ? 'rotate-180' : ''}`} />
+                                    <span className="font-medium">{filters.sort === 'asc' ? 'Ascending' : 'Descending'}</span>
                                 </button>
                             </div>
 
                             {/* Clear Filters */}
-                            <div className="lg:col-span-5">
+                            <div className="sm:col-span-2 lg:col-span-3 xl:col-span-5 flex justify-center">
                                 <button
                                     type="button"
                                     onClick={clearFilters}
-                                    className="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                                    className="px-6 py-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-xl transition-all duration-300 font-medium"
                                 >
                                     Clear All Filters
                                 </button>
                             </div>
                         </div>
-                    )}
+                    </div>
                 </div>
 
-                {/* Outfits Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Enhanced Outfits Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {outfits.map((outfit, index) => (
                         <div
                             key={outfit._id}
                             ref={index === outfits.length - 1 ? lastOutfitElementRef : null}
                             onClick={() => handleOutfitClick(outfit._id)}
-                            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                            onMouseEnter={() => setHoveredCard(outfit._id)}
+                            onMouseLeave={() => setHoveredCard(null)}
+                            className={`bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 overflow-hidden cursor-pointer group transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up ${hoveredCard === outfit._id ? 'ring-4 ring-purple-500/30' : ''}`}
+                            style={{ animationDelay: `${index * 100}ms` }}
                         >
                             {/* Outfit Image */}
-                            <div className="relative h-64 overflow-hidden">
+                            <div className="relative h-72 overflow-hidden">
                                 <img
                                     src={outfit.image}
                                     alt={`${outfit.category} outfit`}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                 />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                
                                 {/* Type Badge */}
                                 {outfit.type !== 'Normal' && (
-                                    <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold ${
-                                        outfit.type === 'Sponsored' ? 'bg-yellow-100 text-yellow-800' :
-                                        outfit.type === 'Promoted' ? 'bg-blue-100 text-blue-800' : ''
+                                    <div className={`absolute top-4 right-4 px-3 py-2 rounded-full text-xs font-bold backdrop-blur-sm transition-all duration-300 transform hover:scale-110 ${
+                                        outfit.type === 'Sponsored' ? 'bg-yellow-400/90 text-yellow-900 shadow-lg' :
+                                        outfit.type === 'Promoted' ? 'bg-blue-400/90 text-blue-900 shadow-lg' : ''
                                     }`}>
                                         {outfit.type}
                                     </div>
                                 )}
+                                
                                 {/* Rating Badge */}
-                                <div className="absolute top-3 left-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                                <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white px-3 py-2 rounded-full text-sm font-bold shadow-lg">
                                     ⭐ {outfit.rateLook.toFixed(1)}
                                 </div>
+
+                                {/* Hover Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
 
                             {/* Outfit Details */}
-                            <div className="p-4">
+                            <div className="p-6">
                                 {/* Category and Section */}
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-purple-600 transition-colors">
+                                <div className="flex justify-between items-start mb-3">
+                                    <h3 className="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition-colors duration-300 line-clamp-1">
                                         {outfit.category}
                                     </h3>
-                                    <span className="text-sm font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
+                                    <span className="text-sm font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 rounded-full shadow-md">
                                         {outfit.section}
                                     </span>
                                 </div>
 
                                 {/* Description */}
                                 {outfit.description && (
-                                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
                                         {outfit.description}
                                     </p>
                                 )}
 
                                 {/* Price */}
-                                <div className="mb-3">
-                                    <span className="text-2xl font-bold text-green-600">
+                                <div className="mb-4">
+                                    <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                                         ₹{outfit.totalPrice.toLocaleString()}
                                     </span>
-                                    <span className="text-sm text-gray-500 ml-2">
+                                    <span className="text-sm text-gray-500 ml-2 font-medium">
                                         ({outfit.numberOfItems} items)
                                     </span>
                                 </div>
 
                                 {/* Tags */}
                                 {outfit.tags && outfit.tags.length > 0 && (
-                                    <div className="mb-3">
-                                        <div className="flex flex-wrap gap-1">
-                                            {outfit.tags.slice(0, 3).map((tag, index) => (
+                                    <div className="mb-4">
+                                        <div className="flex flex-wrap gap-2">
+                                            {outfit.tags.slice(0, 3).map((tag, tagIndex) => (
                                                 <span
-                                                    key={index}
-                                                    className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+                                                    key={tagIndex}
+                                                    className="text-xs bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-3 py-1 rounded-full font-medium transition-all duration-300 hover:from-purple-100 hover:to-pink-100 hover:text-purple-700"
                                                 >
                                                     #{tag}
                                                 </span>
                                             ))}
                                             {outfit.tags.length > 3 && (
-                                                <span className="text-xs text-gray-500">
+                                                <span className="text-xs text-purple-600 font-medium">
                                                     +{outfit.tags.length - 3} more
                                                 </span>
                                             )}
@@ -320,22 +359,22 @@ export default function Outfit() {
                                 )}
 
                                 {/* Engagement Stats */}
-                                <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                                        <div className="flex items-center gap-1">
-                                            <Heart className="w-4 h-4 text-red-500" />
+                                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                                    <div className="flex items-center gap-4 text-sm">
+                                        <div className="flex items-center gap-2 text-red-500 font-medium transition-colors duration-300 hover:text-red-600">
+                                            <Heart className="w-4 h-4" />
                                             <span>{outfit.numberOfLikes}</span>
                                         </div>
-                                        <div className="flex items-center gap-1">
-                                            <ThumbsDown className="w-4 h-4 text-gray-400" />
+                                        <div className="flex items-center gap-2 text-gray-500 font-medium transition-colors duration-300 hover:text-gray-600">
+                                            <ThumbsDown className="w-4 h-4" />
                                             <span>{outfit.numberOfDislikes}</span>
                                         </div>
-                                        <div className="flex items-center gap-1">
-                                            <MessageCircle className="w-4 h-4 text-blue-500" />
+                                        <div className="flex items-center gap-2 text-blue-500 font-medium transition-colors duration-300 hover:text-blue-600">
+                                            <MessageCircle className="w-4 h-4" />
                                             <span>{outfit.numberOfComments}</span>
                                         </div>
                                     </div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-xs text-gray-500 font-medium">
                                         {outfit.numberOfClicks} views
                                     </div>
                                 </div>
@@ -344,35 +383,92 @@ export default function Outfit() {
                     ))}
                 </div>
 
-                {/* Loading Indicator */}
+                {/* Enhanced Loading Indicator */}
                 {loading && (
-                    <div className="flex justify-center items-center py-8">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                    <div className="flex justify-center items-center py-12">
+                        <div className="relative">
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent absolute top-0 left-0"></div>
+                        </div>
                     </div>
                 )}
 
-                {/* No Results */}
+                {/* Enhanced No Results */}
                 {!loading && outfits.length === 0 && (
-                    <div className="text-center py-12">
-                        <div className="text-gray-400 text-6xl mb-4">👗</div>
-                        <h3 className="text-xl font-semibold text-gray-600 mb-2">No outfits found</h3>
-                        <p className="text-gray-500">Try adjusting your search or filters</p>
+                    <div className="text-center py-16 animate-fade-in-up">
+                        <div className="text-8xl mb-6 animate-bounce">👗</div>
+                        <h3 className="text-2xl font-bold text-gray-700 mb-4">No outfits found</h3>
+                        <p className="text-gray-500 mb-6 text-lg">Try adjusting your search or filters</p>
                         <button
                             onClick={clearFilters}
-                            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                             Clear Filters
                         </button>
                     </div>
                 )}
 
-                {/* End of Results */}
+                {/* Enhanced End of Results */}
                 {!hasMore && outfits.length > 0 && (
-                    <div className="text-center py-8">
-                        <p className="text-gray-500">You've reached the end of the outfits!</p>
+                    <div className="text-center py-12 animate-fade-in-up">
+                        <div className="inline-block p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl">
+                            <p className="text-gray-600 font-medium">🎉 You've reached the end of the outfits!</p>
+                        </div>
                     </div>
                 )}
             </div>
+
+            {/* Custom CSS for animations */}
+            <style jsx>{`
+                @keyframes fade-in-up {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes gradient-x {
+                    0%, 100% {
+                        background-size: 200% 200%;
+                        background-position: left center;
+                    }
+                    50% {
+                        background-size: 200% 200%;
+                        background-position: right center;
+                    }
+                }
+
+                .animate-fade-in-up {
+                    animation: fade-in-up 0.6s ease-out forwards;
+                }
+
+                .animate-gradient-x {
+                    background-size: 200% 200%;
+                    animation: gradient-x 3s ease infinite;
+                }
+
+                .line-clamp-1 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .delay-200 { animation-delay: 200ms; }
+                .delay-500 { animation-delay: 500ms; }
+                .delay-1000 { animation-delay: 1000ms; }
+            `}</style>
         </div>
     );
 }

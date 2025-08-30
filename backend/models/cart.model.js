@@ -127,6 +127,16 @@ const cartSchema = new mongoose.Schema({
     timestamps: true 
 });
 
+
+cartOutfitSchema.set('toJSON', {
+    transform: function(doc, ret) {
+        if (ret.outfitId) {
+            ret.outfitId = ret.outfitId.toString();
+        }
+        return ret;
+    }
+});
+
 // Pre-save middleware to calculate totals
 cartSchema.pre('save', function(next) {
     // Calculate total outfits

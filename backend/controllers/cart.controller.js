@@ -32,7 +32,6 @@ export const getCart = async (req, res, next) => {
 };
 
 // Add complete outfit to cart
-// Add complete outfit to cart
 export const addOutfitToCart = async (req, res, next) => {
     try {
         const { 
