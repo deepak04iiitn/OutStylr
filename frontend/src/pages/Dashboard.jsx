@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import Sidebar from '../components/dashboard/Sidebar';
 import Header from '../components/dashboard/Header';
 import StatsCards from '../components/dashboard/StatsCard';
-import Filters from '../components/dashboard/FIlters';
+import Filters from '../components/dashboard/Filters';
 import OutfitTable from '../components/dashboard/OutfitTable';
 import OutfitFormModal from '../components/dashboard/OutfitFormModal';
 
