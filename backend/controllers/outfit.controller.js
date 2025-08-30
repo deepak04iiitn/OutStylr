@@ -392,16 +392,28 @@ export const addComment = async (req, res, next) => {
             return next(errorHandler(400, 'Comment text is required!'));
         }
 
+        // // Debug: Log the user object
+        // console.log('req.user object:', req.user);
+        // console.log('req.user.username:', req.user.username);
+        // console.log('req.user.fullName:', req.user.fullName);
+
         const outfit = await Outfit.findById(req.params.outfitId);
 
         if (!outfit) {
             return next(errorHandler(404, 'Outfit not found!'));
         }
 
+        // Ensure we have a valid username
+        const username = req.user.username || req.user.fullName || req.user.name || 'Anonymous';
+        
+        if (!username || username === 'Anonymous') {
+            return next(errorHandler(400, 'User must have a valid username or name!'));
+        }
+
         const newComment = {
             commentId: uuidv4(),
             userId: req.user.id,
-            userFullName: req.user.fullName,
+            username: username, // Use the validated username
             text: text.trim(),
             likes: [],
             dislikes: [],
@@ -566,7 +578,7 @@ export const addReply = async (req, res, next) => {
         const newReply = {
             replyId: uuidv4(),
             userId: req.user.id,
-            userFullName: req.user.fullName,
+            username: req.user.username,
             text: text.trim(),
             likes: [],
             dislikes: [],

@@ -48,7 +48,7 @@ export default function Header() {
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'About Us', href: '/about-us' },
-    { name: 'Outfits', href: '#outfits' },
+    { name: 'Outfits', href: '/outfit' },
     { name: 'Trending', href: '#trending' },
     { name: 'Custom Request', href: '#custom' },
     { name: 'Blogs', href: '#blogs' },
@@ -206,41 +206,43 @@ export default function Header() {
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
               {/* Cart Icon */}
-              <motion.button 
-                className="cursor-pointer relative p-2 text-purple-300 hover:text-white transition-colors duration-300"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                variants={itemVariants}
-              >
-                <svg 
-                  width="22" 
-                  height="22" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6"
+              <Link to={'/cart'}>
+                <motion.button 
+                  className="cursor-pointer relative p-2 text-purple-300 hover:text-white transition-colors duration-300"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  variants={itemVariants}
                 >
-                  <path 
-                    d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V16.5M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                
-                {cartItemCount > 0 && (
-                  <motion.span
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    whileHover={{ scale: 1.2 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  <svg 
+                    width="22" 
+                    height="22" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
                   >
-                    {cartItemCount > 9 ? '9+' : cartItemCount}
-                  </motion.span>
-                )}
-              </motion.button>
+                    <path 
+                      d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V16.5M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  
+                  {cartItemCount > 0 && (
+                    <motion.span
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      whileHover={{ scale: 1.2 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    >
+                      {cartItemCount > 9 ? '9+' : cartItemCount}
+                    </motion.span>
+                  )}
+                </motion.button>
+              </Link>
 
               {/* Conditional Rendering: Sign In Button OR Profile Dropdown (Desktop Only) */}
               {currentUser ? (

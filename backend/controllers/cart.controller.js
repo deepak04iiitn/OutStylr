@@ -7,8 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 export const getCart = async (req, res, next) => {
     try {
         const cart = await Cart.findOne({ userId: req.user.id })
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook')
-            .populate('savedOutfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook')
+            .populate('savedOutfits.outfitId', 'image category section username items rateLook');
 
         if (!cart) {
             // Create empty cart if doesn't exist
@@ -32,6 +32,7 @@ export const getCart = async (req, res, next) => {
 };
 
 // Add complete outfit to cart
+// Add complete outfit to cart
 export const addOutfitToCart = async (req, res, next) => {
     try {
         const { 
@@ -50,8 +51,8 @@ export const addOutfitToCart = async (req, res, next) => {
             return next(errorHandler(400, 'Quantity must be between 1 and 10 for complete outfits!'));
         }
 
-        // Check if outfit exists
-        const outfit = await Outfit.findById(outfitId);
+        // Check if outfit exists and populate creator info
+        const outfit = await Outfit.findById(outfitId).populate('userId', 'username fullName');
         if (!outfit) {
             return next(errorHandler(404, 'Outfit not found!'));
         }
@@ -81,6 +82,16 @@ export const addOutfitToCart = async (req, res, next) => {
             cartOutfit => cartOutfit.outfitId.toString() === outfitId
         );
 
+        // Get creator name - handle different possible field names
+        let creatorName = 'Unknown Creator';
+        if (outfit.username) {
+            creatorName = outfit.username;
+        } else if (outfit.userId && outfit.userId.username) {
+            creatorName = outfit.userId.username;
+        } else if (outfit.userId && outfit.userId.fullName) {
+            creatorName = outfit.userId.fullName;
+        }
+
         if (existingOutfitIndex > -1) {
             // Update existing outfit quantity
             cart.outfits[existingOutfitIndex].quantity += quantity;
@@ -97,7 +108,7 @@ export const addOutfitToCart = async (req, res, next) => {
                 outfitImage: outfit.image,
                 outfitCategory: outfit.category,
                 outfitSection: outfit.section,
-                creatorName: outfit.userFullName,
+                creatorName: creatorName, // Use the resolved creator name
                 numberOfItems: outfit.numberOfItems,
                 totalOutfitPrice: outfit.totalPrice,
                 quantity: quantity,
@@ -112,11 +123,11 @@ export const addOutfitToCart = async (req, res, next) => {
         
         // Populate outfit data for response
         const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook');
 
         res.status(200).json({
             message: 'Complete outfit added to cart successfully!',
-            outfitName: `${outfit.category} - ${outfit.section} Outfit by ${outfit.userFullName}`,
+            outfitName: `${outfit.category} - ${outfit.section} Outfit by ${creatorName}`,
             itemsIncluded: outfit.numberOfItems,
             cart: populatedCart
         });
@@ -152,7 +163,7 @@ export const removeOutfitFromCart = async (req, res, next) => {
         const updatedCart = await cart.save();
 
         const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook');
 
         res.status(200).json({
             message: 'Outfit removed from cart successfully!',
@@ -198,7 +209,7 @@ export const updateOutfitQuantity = async (req, res, next) => {
         const updatedCart = await cart.save();
 
         const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook');
 
         res.status(200).json({
             message: 'Outfit quantity updated successfully!',
@@ -237,7 +248,7 @@ export const updateOutfitNotes = async (req, res, next) => {
         const updatedCart = await cart.save();
 
         const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook');
 
         res.status(200).json({
             message: 'Outfit notes updated successfully!',
@@ -352,8 +363,8 @@ export const moveOutfitToSaved = async (req, res, next) => {
         const updatedCart = await cart.save();
 
         const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook')
-            .populate('savedOutfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook')
+            .populate('savedOutfits.outfitId', 'image category section username items rateLook');
 
         res.status(200).json({
             message: 'Outfit moved to saved for later!',
@@ -414,8 +425,8 @@ export const moveOutfitBackToCart = async (req, res, next) => {
         const updatedCart = await cart.save();
 
         const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook')
-            .populate('savedOutfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook')
+            .populate('savedOutfits.outfitId', 'image category section username items rateLook');
 
         res.status(200).json({
             message: 'Outfit moved back to cart!',
@@ -453,8 +464,8 @@ export const removeSavedOutfit = async (req, res, next) => {
         const updatedCart = await cart.save();
 
         const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section userFullName items rateLook')
-            .populate('savedOutfits.outfitId', 'image category section userFullName items rateLook');
+            .populate('outfits.outfitId', 'image category section username items rateLook')
+            .populate('savedOutfits.outfitId', 'image category section username items rateLook');
 
         res.status(200).json({
             message: 'Saved outfit removed successfully!',

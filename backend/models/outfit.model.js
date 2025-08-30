@@ -154,12 +154,6 @@ const outfitSchema = new mongoose.Schema({
     items: {
         type: [itemSchema],
         required: true,
-        // validate: {
-        //     validator: function(items) {
-        //         return items.length === this.numberOfItems;
-        //     },
-        //     message: 'Number of items must match numberOfItems field'
-        // }
     },
     rateLook: {
         type: Number,

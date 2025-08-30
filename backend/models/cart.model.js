@@ -283,8 +283,8 @@ cartSchema.statics.createOrGetCart = async function(userId, sessionId = null) {
 
 // Method to get detailed cart with all outfit items
 cartSchema.methods.getDetailedCart = async function() {
-    await this.populate('outfits.outfitId', 'image category section userFullName items rateLook');
-    await this.populate('savedOutfits.outfitId', 'image category section userFullName items rateLook');
+    await this.populate('outfits.outfitId', 'image category section username items rateLook');
+    await this.populate('savedOutfits.outfitId', 'image category section username items rateLook');
     
     // Transform outfits to include individual item details
     const detailedOutfits = this.outfits.map(cartOutfit => {

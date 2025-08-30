@@ -56,7 +56,8 @@ export const signin = async (req, res, next) => {
         const token = jwt.sign(
             { 
                 id: validUser._id,
-                isUserAdmin: validUser.isUserAdmin  // Include isUserAdmin in the token
+                isUserAdmin: validUser.isUserAdmin,  // Include isUserAdmin in the token
+                username: validUser.username || validUser.fullName || validUser.email
             },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
@@ -89,7 +90,8 @@ export const google = async(req, res, next) => {
             const token = jwt.sign(
                 {
                     id: user._id,
-                    isUserAdmin: user.isUserAdmin  // Include isUserAdmin in the token
+                    isUserAdmin: user.isUserAdmin,  // Include isUserAdmin in the token
+                    username: user.username || user.fullName || user.email
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }
@@ -124,7 +126,8 @@ export const google = async(req, res, next) => {
             const token = jwt.sign(
                 {
                     id: newUser._id,
-                    isUserAdmin: newUser.isUserAdmin  // Include isUserAdmin in the token
+                    isUserAdmin: newUser.isUserAdmin,  // Include isUserAdmin in the token
+                    username: newUser.username || newUser.fullName || newUser.email
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }
