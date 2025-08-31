@@ -800,3 +800,33 @@ export const toggleOutfitStatus = async (req, res, next) => {
         next(error);
     }
 };
+
+// Get trending outfits (top 10 by clicks)
+export const getTrendingOutfits = async (req, res, next) => {
+    try {
+        const limit = parseInt(req.query.limit) || 10;
+        
+        // Get top outfits by number of clicks, only active outfits
+        const trendingOutfits = await Outfit.find({ isActive: true })
+            .sort({ numberOfClicks: -1 })
+            .limit(limit)
+            .select('_id image category section numberOfClicks numberOfLikes numberOfComments rateLook totalPrice createdAt');
+
+        // Get total count for statistics
+        const totalActiveOutfits = await Outfit.countDocuments({ isActive: true });
+        const totalClicks = await Outfit.aggregate([
+            { $match: { isActive: true } },
+            { $group: { _id: null, totalClicks: { $sum: "$numberOfClicks" } } }
+        ]);
+
+        res.status(200).json({
+            trendingOutfits,
+            totalActiveOutfits,
+            totalClicks: totalClicks.length > 0 ? totalClicks[0].totalClicks : 0,
+            limit
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};

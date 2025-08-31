@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import WhatsAppBot from '../components/home/WhatsAppBot.jsx';
 import TrendingOutfitsSection from '../components/home/TrendingOutfitsSection.jsx';
@@ -9,7 +9,6 @@ import FAQSection from '../components/home/FAQSection.jsx';
 import BespokeRequestSection from '../components/home/BespokeRequestSection.jsx';
 import PremiumNewsletterSection from '../components/home/PremiumNewsletterSection.jsx';
 import {
-  trendingOutfits,
   carouselItems,
   testimonials,
   faqs,
@@ -26,6 +25,8 @@ export default function Home() {
   const [activeAccordion, setActiveAccordion] = useState(0);
   const [hoveredOutfit, setHoveredOutfit] = useState(null);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [trendingOutfits, setTrendingOutfits] = useState([]);
+  const [trendingLoading, setTrendingLoading] = useState(true);
   const fileInputRef = useRef(null);
   
   // Use refs for mutable values to avoid unnecessary re-renders
@@ -36,6 +37,52 @@ export default function Home() {
   // Optimize scroll transforms with reduced precision
   const heroY = useTransform(scrollYProgress, [0, 0.5], [0, -100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8]);
+
+  // Fetch trending outfits on component mount
+  useEffect(() => {
+    fetchTrendingOutfits();
+  }, []);
+
+  const fetchTrendingOutfits = async () => {
+    try {
+      const response = await fetch('/backend/outfit/trending?limit=3');
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Transform the API data to match the expected format for the TrendingOutfitsSection
+        const transformedOutfits = data.trendingOutfits.map((outfit, index) => ({
+          id: outfit._id,
+          title: outfit.category,
+          category: outfit.section,
+          price: `₹${outfit.totalPrice.toLocaleString()}`,
+          originalPrice: `₹${(outfit.totalPrice * 1.3).toLocaleString()}`, // Add some markup for original price
+          likes: outfit.numberOfLikes,
+          trend: index === 0 ? '🔥 Hot' : index === 1 ? '⚡ New' : index === 2 ? '🌟 Top' : '💎 VIP',
+          gradient: [
+            "from-purple-900/80 via-violet-800/80 to-indigo-900/80",
+            "from-indigo-900/80 via-purple-800/80 to-violet-900/80",
+            "from-violet-900/80 via-purple-800/80 to-indigo-900/80",
+            "from-purple-800/80 via-indigo-800/80 to-violet-900/80",
+            "from-indigo-800/80 via-violet-800/80 to-purple-900/80",
+            "from-purple-900/80 via-violet-900/80 to-indigo-800/80"
+          ][index % 3],
+          image: outfit.image,
+          clicks: outfit.numberOfClicks
+        }));
+        setTrendingOutfits(transformedOutfits);
+      } else {
+        console.error('Error fetching trending outfits:', data.error);
+        // Fallback to empty array if API fails
+        setTrendingOutfits([]);
+      }
+    } catch (error) {
+      console.error('Error fetching trending outfits:', error);
+      // Fallback to empty array if API fails
+      setTrendingOutfits([]);
+    } finally {
+      setTrendingLoading(false);
+    }
+  };
 
   // Memoize handlers to prevent re-renders
   const handleImageUpload = useCallback((e) => {
@@ -405,6 +452,7 @@ export default function Home() {
         outfits={trendingOutfits}
         hoveredOutfit={hoveredOutfit}
         setHoveredOutfit={handleOutfitHover}
+        loading={trendingLoading}
       />
 
       <LuxuryFeaturesSection features={luxuryFeatures} />

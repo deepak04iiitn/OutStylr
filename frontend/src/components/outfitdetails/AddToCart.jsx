@@ -10,8 +10,7 @@ function AddToCart({
     setAddingToCart, 
     quantity, 
     setQuantity, 
-    notes, 
-    setNotes, 
+ 
     showCartOptions, 
     setShowCartOptions 
 }) {
@@ -46,8 +45,7 @@ function AddToCart({
                 },
                 body: JSON.stringify({
                     outfitId: outfit._id,
-                    quantity,
-                    notes: notes.trim()
+                    quantity
                 })
             });
     
@@ -69,7 +67,9 @@ function AddToCart({
                 });
                 setShowCartOptions(false);
                 setQuantity(1);
-                setNotes('');
+                
+                // Dispatch custom event to update cart count in header
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
             } else {
                 toast.error(data.error || 'Failed to add outfit to cart', {
                     duration: 4000,
@@ -159,29 +159,12 @@ function AddToCart({
                                 </motion.button>
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                                Special Instructions (Optional)
-                            </label>
-                            <motion.textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                placeholder="Any special instructions or preferences..."
-                                className="w-full p-3 border border-neutral-300 rounded-xl resize-none text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                rows="3"
-                                maxLength="200"
-                                whileFocus={{ scale: 1.02 }}
-                            />
-                            <div className="text-xs text-neutral-500 mt-1 text-right">
-                                {notes.length}/200
-                            </div>
-                        </div>
+
                         <div className="flex gap-3 pt-2">
                             <motion.button
                                 onClick={() => {
                                     setShowCartOptions(false);
                                     setQuantity(1);
-                                    setNotes('');
                                 }}
                                 className="cursor-pointer flex-1 px-4 py-3 border border-neutral-300 text-neutral-700 rounded-xl hover:bg-neutral-100 transition-colors font-semibold"
                                 whileHover={buttonHover}

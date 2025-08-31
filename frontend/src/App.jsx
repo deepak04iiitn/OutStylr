@@ -13,6 +13,7 @@ import AboutUs from './pages/AboutUs';
 import Outfit from './pages/Outfit';
 import Cart from './pages/Cart';
 import OutfitDetails from './pages/OutfitDetails';
+import Trending from './pages/Trending';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { checkTokenExpiry } from './utils/tokenUtils';
@@ -62,6 +63,7 @@ function AppContent() {
                         </Route>
                         <Route path='/outfit' element={<Outfit />} />
                         <Route path='/outfit/:id' element={<OutfitDetails />} />
+                        <Route path='/trending' element={<Trending />} />
                         <Route path='/cart' element={<Cart />} />
                     </Routes>
                 </div>

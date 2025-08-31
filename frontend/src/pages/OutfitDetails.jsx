@@ -7,6 +7,7 @@ import OutfitStats from '../components/outfitdetails/OutfitStats';
 import OutfitInfo from '../components/outfitdetails/OutfitInfo';
 import OutfitItems from '../components/outfitdetails/OutfitItems';
 import CommentsSection from '../components/outfitdetails/CommentsSection';
+import { MessageCircle, Send } from 'lucide-react';
 
 const containerVariants = {
     hidden: { opacity: 0 },

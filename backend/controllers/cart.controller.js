@@ -11,7 +11,6 @@ export const getCart = async (req, res, next) => {
             .populate('savedOutfits.outfitId', 'image category section username items rateLook');
 
         if (!cart) {
-            // Create empty cart if doesn't exist
             const newCart = new Cart({
                 userId: req.user.id,
                 outfits: [],
@@ -19,13 +18,25 @@ export const getCart = async (req, res, next) => {
                 totalItems: 0,
                 totalPrice: 0
             });
-            
             const savedCart = await newCart.save();
             return res.status(200).json(savedCart);
         }
 
-        res.status(200).json(cart);
+        // Ensure all existing outfits have outfitUrl
+        let needsUpdate = false;
+        cart.outfits.forEach(outfit => {
+            if (!outfit.outfitUrl) {
+                outfit.outfitUrl = `/outfit/${outfit.outfitId}`;
+                needsUpdate = true;
+            }
+        });
 
+        // Save if any outfits were updated
+        if (needsUpdate) {
+            await cart.save();
+        }
+
+        res.status(200).json(cart);
     } catch (error) {
         next(error);
     }
@@ -40,17 +51,14 @@ export const addOutfitToCart = async (req, res, next) => {
             notes = ''
         } = req.body;
 
-        // Validate required fields
         if (!outfitId) {
             return next(errorHandler(400, 'Outfit ID is required!'));
         }
 
-        // Validate quantity
         if (quantity < 1 || quantity > 10) {
             return next(errorHandler(400, 'Quantity must be between 1 and 10 for complete outfits!'));
         }
 
-        // Check if outfit exists and populate creator info
         const outfit = await Outfit.findById(outfitId).populate('userId', 'username fullName');
         if (!outfit) {
             return next(errorHandler(404, 'Outfit not found!'));
@@ -64,7 +72,6 @@ export const addOutfitToCart = async (req, res, next) => {
             return next(errorHandler(400, 'This outfit has no items!'));
         }
 
-        // Get or create cart
         let cart = await Cart.findOne({ userId: req.user.id });
         if (!cart) {
             cart = new Cart({
@@ -76,12 +83,10 @@ export const addOutfitToCart = async (req, res, next) => {
             });
         }
 
-        // Check if outfit already exists in cart
         const existingOutfitIndex = cart.outfits.findIndex(
             cartOutfit => cartOutfit.outfitId.toString() === outfitId
         );
 
-        // Get creator name - handle different possible field names
         let creatorName = 'Unknown Creator';
         if (outfit.username) {
             creatorName = outfit.username;
@@ -92,35 +97,36 @@ export const addOutfitToCart = async (req, res, next) => {
         }
 
         if (existingOutfitIndex > -1) {
-            // Update existing outfit quantity
             cart.outfits[existingOutfitIndex].quantity += quantity;
-            
-            // Update notes if provided
             if (notes) {
                 cart.outfits[existingOutfitIndex].notes = notes;
             }
         } else {
-            // Add new complete outfit to cart
             const newCartOutfit = {
                 cartOutfitId: uuidv4(),
                 outfitId: outfitId,
+                outfitUrl: `/outfit/${outfitId}`, // Store the outfit's detail page URL
                 outfitImage: outfit.image,
                 outfitCategory: outfit.category,
                 outfitSection: outfit.section,
-                creatorName: creatorName, // Use the resolved creator name
+                creatorName: creatorName,
                 numberOfItems: outfit.numberOfItems,
                 totalOutfitPrice: outfit.totalPrice,
                 quantity: quantity,
                 notes: notes,
                 addedAt: new Date()
             };
-            
             cart.outfits.push(newCartOutfit);
         }
 
+        // Ensure all existing outfits have outfitUrl before saving
+        cart.outfits.forEach(outfit => {
+            if (!outfit.outfitUrl) {
+                outfit.outfitUrl = `/outfit/${outfit.outfitId}`;
+            }
+        });
+
         const updatedCart = await cart.save();
-        
-        // Populate outfit data for response
         const populatedCart = await Cart.findById(updatedCart._id)
             .populate('outfits.outfitId', 'image category section username items rateLook');
 
@@ -130,7 +136,6 @@ export const addOutfitToCart = async (req, res, next) => {
             itemsIncluded: outfit.numberOfItems,
             cart: populatedCart
         });
-
     } catch (error) {
         next(error);
     }
@@ -150,6 +155,13 @@ export const removeOutfitFromCart = async (req, res, next) => {
         if (!cart) {
             return next(errorHandler(404, 'Cart not found!'));
         }
+
+        // Ensure all existing outfits have outfitUrl
+        cart.outfits.forEach(outfit => {
+            if (!outfit.outfitUrl) {
+                outfit.outfitUrl = `/outfit/${outfit.outfitId}`;
+            }
+        });
 
         const outfitIndex = cart.outfits.findIndex(outfit => outfit.cartOutfitId === cartOutfitId);
 
@@ -172,7 +184,6 @@ export const removeOutfitFromCart = async (req, res, next) => {
             },
             cart: populatedCart
         });
-
     } catch (error) {
         next(error);
     }
@@ -198,8 +209,14 @@ export const updateOutfitQuantity = async (req, res, next) => {
             return next(errorHandler(404, 'Cart not found!'));
         }
 
-        const outfit = cart.outfits.find(outfit => outfit.cartOutfitId === cartOutfitId);
+        // Ensure all existing outfits have outfitUrl
+        cart.outfits.forEach(outfit => {
+            if (!outfit.outfitUrl) {
+                outfit.outfitUrl = `/outfit/${outfit.outfitId}`;
+            }
+        });
 
+        const outfit = cart.outfits.find(outfit => outfit.cartOutfitId === cartOutfitId);
         if (!outfit) {
             return next(errorHandler(404, 'Outfit not found in cart!'));
         }
@@ -214,11 +231,11 @@ export const updateOutfitQuantity = async (req, res, next) => {
             message: 'Outfit quantity updated successfully!',
             cart: populatedCart
         });
-
     } catch (error) {
         next(error);
     }
 };
+
 
 // Update outfit notes
 export const updateOutfitNotes = async (req, res, next) => {
@@ -235,6 +252,13 @@ export const updateOutfitNotes = async (req, res, next) => {
         if (!cart) {
             return next(errorHandler(404, 'Cart not found!'));
         }
+
+        // Ensure all existing outfits have outfitUrl
+        cart.outfits.forEach(outfit => {
+            if (!outfit.outfitUrl) {
+                outfit.outfitUrl = `/outfit/${outfit.outfitId}`;
+            }
+        });
 
         const outfit = cart.outfits.find(outfit => outfit.cartOutfitId === cartOutfitId);
 
@@ -284,6 +308,61 @@ export const clearCart = async (req, res, next) => {
     }
 };
 
+
+// Move outfit to saved for later
+export const moveOutfitToSaved = async (req, res, next) => {
+    try {
+        const { cartOutfitId } = req.params;
+
+        if (!cartOutfitId) {
+            return next(errorHandler(400, 'Cart outfit ID is required!'));
+        }
+
+        const cart = await Cart.findOne({ userId: req.user.id });
+
+        if (!cart) {
+            return next(errorHandler(404, 'Cart not found!'));
+        }
+
+        const outfitIndex = cart.outfits.findIndex(outfit => outfit.cartOutfitId === cartOutfitId);
+
+        if (outfitIndex === -1) {
+            return next(errorHandler(404, 'Outfit not found in cart!'));
+        }
+
+        const outfit = cart.outfits[outfitIndex];
+        
+        cart.savedOutfits.push({
+            cartOutfitId: outfit.cartOutfitId,
+            outfitId: outfit.outfitId,
+            outfitUrl: outfit.outfitUrl, // Carry over the outfit URL
+            outfitImage: outfit.outfitImage,
+            outfitCategory: outfit.outfitCategory,
+            outfitSection: outfit.outfitSection,
+            creatorName: outfit.creatorName,
+            numberOfItems: outfit.numberOfItems,
+            totalOutfitPrice: outfit.totalOutfitPrice,
+            savedAt: new Date()
+        });
+        
+        cart.outfits.splice(outfitIndex, 1);
+        
+        const updatedCart = await cart.save();
+
+        const populatedCart = await Cart.findById(updatedCart._id)
+            .populate('outfits.outfitId', 'image category section username items rateLook')
+            .populate('savedOutfits.outfitId', 'image category section username items rateLook');
+
+        res.status(200).json({
+            message: 'Outfit moved to saved for later!',
+            cart: populatedCart
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 // Get cart summary/statistics
 export const getCartSummary = async (req, res, next) => {
     try {
@@ -320,61 +399,6 @@ export const getCartSummary = async (req, res, next) => {
     }
 };
 
-// Move outfit to saved for later
-export const moveOutfitToSaved = async (req, res, next) => {
-    try {
-        const { cartOutfitId } = req.params;
-
-        if (!cartOutfitId) {
-            return next(errorHandler(400, 'Cart outfit ID is required!'));
-        }
-
-        const cart = await Cart.findOne({ userId: req.user.id });
-
-        if (!cart) {
-            return next(errorHandler(404, 'Cart not found!'));
-        }
-
-        const outfitIndex = cart.outfits.findIndex(outfit => outfit.cartOutfitId === cartOutfitId);
-
-        if (outfitIndex === -1) {
-            return next(errorHandler(404, 'Outfit not found in cart!'));
-        }
-
-        const outfit = cart.outfits[outfitIndex];
-        
-        // Add to saved outfits
-        cart.savedOutfits.push({
-            cartOutfitId: outfit.cartOutfitId,
-            outfitId: outfit.outfitId,
-            outfitImage: outfit.outfitImage,
-            outfitCategory: outfit.outfitCategory,
-            outfitSection: outfit.outfitSection,
-            creatorName: outfit.creatorName,
-            numberOfItems: outfit.numberOfItems,
-            totalOutfitPrice: outfit.totalOutfitPrice,
-            savedAt: new Date()
-        });
-        
-        // Remove from cart
-        cart.outfits.splice(outfitIndex, 1);
-        
-        const updatedCart = await cart.save();
-
-        const populatedCart = await Cart.findById(updatedCart._id)
-            .populate('outfits.outfitId', 'image category section username items rateLook')
-            .populate('savedOutfits.outfitId', 'image category section username items rateLook');
-
-        res.status(200).json({
-            message: 'Outfit moved to saved for later!',
-            cart: populatedCart
-        });
-
-    } catch (error) {
-        next(error);
-    }
-};
-
 // Move outfit back to cart from saved
 export const moveOutfitBackToCart = async (req, res, next) => {
     try {
@@ -403,10 +427,10 @@ export const moveOutfitBackToCart = async (req, res, next) => {
 
         const savedOutfit = cart.savedOutfits[savedOutfitIndex];
         
-        // Add back to cart
         cart.outfits.push({
             cartOutfitId: uuidv4(),
             outfitId: savedOutfit.outfitId,
+            outfitUrl: savedOutfit.outfitUrl || `/outfit/${savedOutfit.outfitId}`, // Ensure outfitUrl is always present
             outfitImage: savedOutfit.outfitImage,
             outfitCategory: savedOutfit.outfitCategory,
             outfitSection: savedOutfit.outfitSection,
@@ -418,7 +442,6 @@ export const moveOutfitBackToCart = async (req, res, next) => {
             addedAt: new Date()
         });
         
-        // Remove from saved outfits
         cart.savedOutfits.splice(savedOutfitIndex, 1);
         
         const updatedCart = await cart.save();
@@ -431,7 +454,6 @@ export const moveOutfitBackToCart = async (req, res, next) => {
             message: 'Outfit moved back to cart!',
             cart: populatedCart
         });
-
     } catch (error) {
         next(error);
     }
@@ -474,7 +496,6 @@ export const removeSavedOutfit = async (req, res, next) => {
             },
             cart: populatedCart
         });
-
     } catch (error) {
         next(error);
     }
@@ -492,7 +513,6 @@ export const getCartCount = async (req, res, next) => {
             outfitCount,
             itemCount
         });
-
     } catch (error) {
         next(error);
     }

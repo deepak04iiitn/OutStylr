@@ -7,7 +7,7 @@ import { signOutStart, signoutSuccess, signOutFailure } from '../redux/user/user
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(3);
+  const [cartItemCount, setCartItemCount] = useState(0);
   
   const { scrollY } = useScroll();
   const dispatch = useDispatch();
@@ -27,6 +27,65 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Fetch cart count when user changes
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (currentUser) {
+        try {
+          const response = await fetch('/backend/cart/count', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setCartItemCount(data.outfitCount || 0);
+          }
+        } catch (error) {
+          console.error('Error fetching cart count:', error);
+          setCartItemCount(0);
+        }
+      } else {
+        setCartItemCount(0);
+      }
+    };
+
+    fetchCartCount();
+  }, [currentUser]);
+
+  // Listen for cart updates from other components
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      if (currentUser) {
+        const fetchCartCount = async () => {
+          try {
+            const response = await fetch('/backend/cart/count', {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              setCartItemCount(data.outfitCount || 0);
+            }
+          } catch (error) {
+            console.error('Error fetching cart count:', error);
+          }
+        };
+        fetchCartCount();
+      }
+    };
+
+    // Listen for custom cart update events
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, [currentUser]);
+
   const handleSignOut = async () => {
     try {
       dispatch(signOutStart());
@@ -39,6 +98,7 @@ export default function Header() {
         return;
       }
       dispatch(signoutSuccess());
+      setCartItemCount(0); // Reset cart count on sign out
       setIsMobileMenuOpen(false);
     } catch (error) {
       dispatch(signOutFailure(error.message));
@@ -49,7 +109,7 @@ export default function Header() {
     { name: 'Home', href: '/' },
     { name: 'About Us', href: '/about-us' },
     { name: 'Outfits', href: '/outfit' },
-    { name: 'Trending', href: '#trending' },
+    { name: 'Trending', href: '/trending' },
     { name: 'Custom Request', href: '#custom' },
     { name: 'Blogs', href: '#blogs' },
   ];

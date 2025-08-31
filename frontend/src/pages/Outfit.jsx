@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Heart, MessageCircle, ThumbsDown, Search, Filter, SortDesc, X, ChevronDown } from 'lucide-react';
+import { Heart, MessageCircle, ThumbsDown, Search, Filter, SortDesc, X, ChevronDown, ZoomIn } from 'lucide-react';
+import ImageModal from '../components/ImageModal';
 
 export default function Outfit() {
     const [outfits, setOutfits] = useState([]);
@@ -17,6 +18,7 @@ export default function Outfit() {
     const [showFilters, setShowFilters] = useState(false);
     const [hoveredCard, setHoveredCard] = useState(null);
     const [searchFocused, setSearchFocused] = useState(false);
+    const [modalImage, setModalImage] = useState({ isOpen: false, imageUrl: '', imageAlt: '' });
     const observerRef = useRef();
     
     const categories = [
@@ -126,6 +128,20 @@ export default function Outfit() {
         window.location.href = `/outfit/${outfitId}`;
     };
 
+    // Handle image modal
+    const handleImageClick = (e, outfit) => {
+        e.stopPropagation(); // Prevent card click
+        setModalImage({
+            isOpen: true,
+            imageUrl: outfit.image,
+            imageAlt: `${outfit.category} - ${outfit.section} Outfit`
+        });
+    };
+
+    const closeImageModal = () => {
+        setModalImage({ isOpen: false, imageUrl: '', imageAlt: '' });
+    };
+
     return (
         <div className="min-h-screen relative overflow-hidden">
             {/* Animated Background Elements */}
@@ -141,6 +157,16 @@ export default function Outfit() {
                     <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
                         Browse through our curated collection of stylish outfits for every occasion
                     </p>
+                    
+                    {/* User instruction note */}
+                    <div className="mt-6 mb-4">
+                        <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-2 text-sm text-blue-700">
+                            <ZoomIn className="w-4 h-4" />
+                            <span className="font-medium">Tip:</span>
+                            <span>Click on any outfit image to view it in full size</span>
+                        </div>
+                    </div>
+                    
                     <div className="mt-6 h-1 w-24 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full"></div>
                 </div>
 
@@ -285,9 +311,27 @@ export default function Outfit() {
                                 <img
                                     src={outfit.image}
                                     alt={`${outfit.category} outfit`}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                                    onClick={(e) => handleImageClick(e, outfit)}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                
+                                {/* Zoom overlay */}
+                                <div 
+                                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                                    onClick={(e) => handleImageClick(e, outfit)}
+                                >
+                                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                                        <ZoomIn className="w-6 h-6 text-gray-800" />
+                                    </div>
+                                </div>
+                                
+                                {/* Click hint */}
+                                <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg text-center">
+                                        Click image to view full size
+                                    </div>
+                                </div>
                                 
                                 {/* Type Badge */}
                                 {outfit.type !== 'Normal' && (
@@ -469,6 +513,14 @@ export default function Outfit() {
                 .delay-500 { animation-delay: 500ms; }
                 .delay-1000 { animation-delay: 1000ms; }
             `}</style>
+            
+            {/* Image Modal */}
+            <ImageModal
+                isOpen={modalImage.isOpen}
+                onClose={closeImageModal}
+                imageUrl={modalImage.imageUrl}
+                imageAlt={modalImage.imageAlt}
+            />
         </div>
     );
 }

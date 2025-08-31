@@ -12,7 +12,10 @@ const cartOutfitSchema = new mongoose.Schema({
         ref: 'Outfit',
         required: true
     },
-    // Outfit basic info (cached for performance)
+    outfitUrl: {  // New field for outfit URL
+        type: String,
+        required: true
+    },
     outfitImage: {
         type: String,
         required: true
@@ -37,7 +40,6 @@ const cartOutfitSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    // Customer selections
     quantity: {
         type: Number,
         required: true,
@@ -67,6 +69,10 @@ const savedOutfitSchema = new mongoose.Schema({
     outfitId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Outfit',
+        required: true
+    },
+    outfitUrl: {  // New field for outfit URL
+        type: String,
         required: true
     },
     outfitImage: String,
@@ -163,18 +169,15 @@ cartSchema.methods.addCompleteOutfit = function(outfitData) {
     );
 
     if (existingOutfitIndex > -1) {
-        // Update existing outfit quantity
         this.outfits[existingOutfitIndex].quantity += outfitData.quantity || 1;
-        
-        // Update notes if provided
         if (outfitData.notes) {
             this.outfits[existingOutfitIndex].notes = outfitData.notes;
         }
     } else {
-        // Add new complete outfit
         this.outfits.push({
             ...outfitData,
             cartOutfitId: uuidv4(),
+            outfitUrl: outfitData.outfitUrl || `/outfit/${outfitData.outfitId}`,
             addedAt: new Date()
         });
     }
@@ -253,6 +256,7 @@ cartSchema.methods.moveOutfitBackToCart = function(savedOutfitId, quantity = 1, 
         this.outfits.push({
             cartOutfitId: uuidv4(),
             outfitId: savedOutfit.outfitId,
+            outfitUrl: savedOutfit.outfitUrl || `/outfit/${savedOutfit.outfitId}`,
             outfitImage: savedOutfit.outfitImage,
             outfitCategory: savedOutfit.outfitCategory,
             outfitSection: savedOutfit.outfitSection,

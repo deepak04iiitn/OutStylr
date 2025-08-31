@@ -8,7 +8,7 @@ import {
     ArrowRight, 
     Package, 
     ExternalLink,
-    Edit3,
+
     Save,
     X,
     Star,
@@ -24,17 +24,26 @@ import {
     Eye,
     Menu,
     Grid,
-    List
+    List,
+    AlertTriangle,
+    CheckCircle
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 export default function CartPage() {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [updatingItem, setUpdatingItem] = useState(null);
-    const [editingNotes, setEditingNotes] = useState(null);
-    const [tempNotes, setTempNotes] = useState('');
+
+    const [confirmationModal, setConfirmationModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: null,
+        type: 'warning' // 'warning', 'danger', 'info'
+    });
     
     // Pagination and Display States
     const [currentPage, setCurrentPage] = useState(1);
@@ -164,6 +173,29 @@ export default function CartPage() {
             if (response.ok) {
                 const data = await response.json();
                 setCart(data.cart);
+                
+                // Dispatch custom event to update cart count in header
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
+                
+                toast.success('Quantity updated successfully!', {
+                    duration: 2000,
+                    position: 'top-center',
+                    style: {
+                        background: '#10b981',
+                        color: 'white',
+                        fontWeight: 'bold',
+                    },
+                });
+            } else {
+                toast.error('Failed to update quantity', {
+                    duration: 3000,
+                    position: 'top-center',
+                    style: {
+                        background: '#ef4444',
+                        color: 'white',
+                        fontWeight: 'bold',
+                    },
+                });
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
@@ -172,77 +204,128 @@ export default function CartPage() {
         }
     };
 
-    const removeOutfit = async (cartOutfitId) => {
-        if (!confirm('Are you sure you want to remove this outfit from your cart?')) return;
-        
-        try {
-            const response = await fetch(`/backend/cart/outfit/${cartOutfitId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+    const removeOutfit = (cartOutfitId) => {
+        const outfit = cart.outfits.find(o => o.cartOutfitId === cartOutfitId);
+        setConfirmationModal({
+            isOpen: true,
+            title: 'Remove Outfit',
+            message: `Are you sure you want to remove "${outfit?.outfitCategory}" from your cart?`,
+            type: 'danger',
+            onConfirm: async () => {
+                try {
+                    const response = await fetch(`/backend/cart/outfit/${cartOutfitId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setCart(data.cart);
+                        
+                        // Dispatch custom event to update cart count in header
+                        window.dispatchEvent(new CustomEvent('cartUpdated'));
+                        
+                        toast.success('Outfit removed from cart successfully!', {
+                            duration: 3000,
+                            position: 'top-center',
+                            style: {
+                                background: '#10b981',
+                                color: 'white',
+                                fontWeight: 'bold',
+                            },
+                        });
+                    } else {
+                        toast.error('Failed to remove outfit from cart', {
+                            duration: 3000,
+                            position: 'top-center',
+                            style: {
+                                background: '#ef4444',
+                                color: 'white',
+                                fontWeight: 'bold',
+                            },
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error removing outfit:', error);
+                    toast.error('An error occurred while removing the outfit', {
+                        duration: 3000,
+                        position: 'top-center',
+                        style: {
+                            background: '#ef4444',
+                            color: 'white',
+                            fontWeight: 'bold',
+                        },
+                    });
                 }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCart(data.cart);
+                setConfirmationModal({ isOpen: false, title: '', message: '', onConfirm: null, type: 'warning' });
             }
-        } catch (error) {
-            console.error('Error removing outfit:', error);
-        }
+        });
     };
 
-    const updateNotes = async (cartOutfitId, newNotes) => {
-        try {
-            const response = await fetch(`/backend/cart/outfit/${cartOutfitId}/notes`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({ notes: newNotes })
-            });
 
-            if (response.ok) {
-                const data = await response.json();
-                setCart(data.cart);
-                setEditingNotes(null);
-                setTempNotes('');
-            }
-        } catch (error) {
-            console.error('Error updating notes:', error);
-        }
-    };
 
-    const clearCart = async () => {
-        if (!confirm('Are you sure you want to clear your entire cart?')) return;
-        
-        try {
-            const response = await fetch('/backend/cart/clear', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+    const clearCart = () => {
+        setConfirmationModal({
+            isOpen: true,
+            title: 'Clear Cart',
+            message: 'Are you sure you want to clear your entire cart? This action cannot be undone.',
+            type: 'danger',
+            onConfirm: async () => {
+                try {
+                    const response = await fetch('/backend/cart/clear', {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setCart(data.cart);
+                        
+                        // Dispatch custom event to update cart count in header
+                        window.dispatchEvent(new CustomEvent('cartUpdated'));
+                        
+                        toast.success('Cart cleared successfully!', {
+                            duration: 3000,
+                            position: 'top-center',
+                            style: {
+                                background: '#10b981',
+                                color: 'white',
+                                fontWeight: 'bold',
+                            },
+                        });
+                    } else {
+                        toast.error('Failed to clear cart', {
+                            duration: 3000,
+                            position: 'top-center',
+                            style: {
+                                background: '#ef4444',
+                                color: 'white',
+                                fontWeight: 'bold',
+                            },
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error clearing cart:', error);
+                    toast.error('An error occurred while clearing the cart', {
+                        duration: 3000,
+                        position: 'top-center',
+                        style: {
+                            background: '#ef4444',
+                            color: 'white',
+                            fontWeight: 'bold',
+                        },
+                    });
                 }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCart(data.cart);
+                setConfirmationModal({ isOpen: false, title: '', message: '', onConfirm: null, type: 'warning' });
             }
-        } catch (error) {
-            console.error('Error clearing cart:', error);
-        }
+        });
     };
 
-    const startEditingNotes = (cartOutfitId, currentNotes) => {
-        setEditingNotes(cartOutfitId);
-        setTempNotes(currentNotes || '');
-    };
 
-    const cancelEditingNotes = () => {
-        setEditingNotes(null);
-        setTempNotes('');
-    };
 
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('en-US', {
@@ -254,8 +337,12 @@ export default function CartPage() {
     };
 
     // Navigate to outfit detail page
-    const viewOutfitDetails = (outfitId) => {
-      window.location.href = `/outfit/${outfitId}`;
+    const viewOutfitDetails = (outfitUrl) => {
+        if (!outfitUrl) {
+            console.error('Invalid outfit URL');
+            return;
+        }
+        window.location.href = outfitUrl;
     };
 
     if (loading) {
@@ -394,6 +481,66 @@ export default function CartPage() {
 
     const hasCartItems = cart?.outfits?.length > 0;
 
+    // Confirmation Modal Component
+    const ConfirmationModal = () => (
+        <AnimatePresence>
+            {confirmationModal.isOpen && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                    onClick={() => setConfirmationModal({ isOpen: false, title: '', message: '', onConfirm: null, type: 'warning' })}
+                >
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className={`p-3 rounded-full ${
+                                confirmationModal.type === 'danger' ? 'bg-red-100' : 
+                                confirmationModal.type === 'warning' ? 'bg-yellow-100' : 'bg-blue-100'
+                            }`}>
+                                <AlertTriangle className={`w-6 h-6 ${
+                                    confirmationModal.type === 'danger' ? 'text-red-600' : 
+                                    confirmationModal.type === 'warning' ? 'text-yellow-600' : 'text-blue-600'
+                                }`} />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900">{confirmationModal.title}</h3>
+                        </div>
+                        
+                        <p className="text-gray-600 mb-6">{confirmationModal.message}</p>
+                        
+                        <div className="flex gap-3 justify-end">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setConfirmationModal({ isOpen: false, title: '', message: '', onConfirm: null, type: 'warning' })}
+                                className="cursor-pointer px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+                            >
+                                Cancel
+                            </motion.button>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={confirmationModal.onConfirm}
+                                className={`cursor-pointer px-6 py-2 rounded-lg font-medium text-white transition-colors ${
+                                    confirmationModal.type === 'danger' ? 'bg-red-600 hover:bg-red-700' : 
+                                    confirmationModal.type === 'warning' ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-blue-600 hover:bg-blue-700'
+                                }`}
+                            >
+                                Confirm
+                            </motion.button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+
     // Card View Component for Mobile
     const CardView = ({ outfit }) => (
         <motion.div
@@ -414,7 +561,7 @@ export default function CartPage() {
                         variants={buttonVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={() => viewOutfitDetails(outfit.outfitId)}
+                        onClick={() => viewOutfitDetails(outfit.outfitUrl)}
                         className="absolute -top-2 -right-2 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-colors"
                     >
                         <Eye className="w-4 h-4" />
@@ -490,9 +637,7 @@ export default function CartPage() {
 
                         {/* Price */}
                         <div className="text-center sm:text-right">
-                            <div className="text-sm text-gray-600">
-                                ₹{outfit.totalOutfitPrice.toLocaleString()} each
-                            </div>
+                            
                             <motion.div
                                 key={outfit.totalOutfitPrice * outfit.quantity}
                                 initial={{ scale: 1.1, color: "#8b5cf6" }}
@@ -504,6 +649,8 @@ export default function CartPage() {
                             </motion.div>
                         </div>
                     </div>
+
+
 
                     {/* Actions */}
                     <div className="flex gap-2 justify-center sm:justify-start">
@@ -654,10 +801,10 @@ export default function CartPage() {
                                         whileHover="hover"
                                         whileTap="tap"
                                         onClick={clearCart}
-                                        className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 text-red-500 hover:text-red-600 font-semibold rounded-xl hover:bg-red-50/80 backdrop-blur-sm transition-all duration-300 border border-red-200/60 text-sm sm:text-base"
+                                        className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 sm:py-3 text-red-500 hover:text-red-600 font-semibold rounded-xl hover:bg-red-50/80 backdrop-blur-sm transition-all duration-300 border border-red-200/60 text-sm sm:text-base"
                                     >
                                         <Trash2 className="w-4 h-4" />
-                                        Clear All
+                                        Clear Cart
                                     </motion.button>
                                 </div>
                             </div>
@@ -766,7 +913,7 @@ export default function CartPage() {
                                                                             src={outfit.outfitImage}
                                                                             alt={`${outfit.outfitCategory} outfit`}
                                                                             className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-2xl shadow-lg cursor-pointer transition-all duration-300"
-                                                                            onClick={() => viewOutfitDetails(outfit.outfitId)}
+                                                                            onClick={() => viewOutfitDetails(outfit.outfitUrl)}
                                                                         />
                                                                         {/* View Details Overlay */}
                                                                         <motion.div
@@ -782,8 +929,8 @@ export default function CartPage() {
                                                                             variants={buttonVariants}
                                                                             whileHover="hover"
                                                                             whileTap="tap"
-                                                                            onClick={() => viewOutfitDetails(outfit.outfitId)}
-                                                                            className="absolute -top-2 -right-2 w-6 h-6 sm:w-7 sm:h-7 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-colors"
+                                                                            onClick={() => viewOutfitDetails(outfit.outfitUrl)}
+                                                                            className="cursor-pointer absolute -top-2 -right-2 w-6 h-6 sm:w-7 sm:h-7 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-colors"
                                                                         >
                                                                             <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                                                                         </motion.button>
@@ -793,7 +940,7 @@ export default function CartPage() {
                                                                         <motion.h3
                                                                             whileHover={{ x: 5 }}
                                                                             className="text-base sm:text-lg font-bold text-gray-900 mb-2 cursor-pointer"
-                                                                            onClick={() => viewOutfitDetails(outfit.outfitId)}
+                                                                            onClick={() => viewOutfitDetails(outfit.outfitUrl)}
                                                                         >
                                                                             {outfit.outfitCategory}
                                                                         </motion.h3>
@@ -826,7 +973,7 @@ export default function CartPage() {
                                                                         whileTap="tap"
                                                                         onClick={() => updateQuantity(outfit.cartOutfitId, outfit.quantity - 1)}
                                                                         disabled={outfit.quantity <= 1 || updatingItem === outfit.cartOutfitId}
-                                                                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white hover:bg-indigo-50 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg transition-colors duration-200 shadow-sm"
+                                                                        className="cursor-pointer w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white hover:bg-indigo-50 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg transition-colors duration-200 shadow-sm"
                                                                     >
                                                                         <Minus className="w-3 h-3 text-indigo-600" />
                                                                     </motion.button>
@@ -856,7 +1003,7 @@ export default function CartPage() {
                                                                         whileTap="tap"
                                                                         onClick={() => updateQuantity(outfit.cartOutfitId, outfit.quantity + 1)}
                                                                         disabled={outfit.quantity >= 10 || updatingItem === outfit.cartOutfitId}
-                                                                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white hover:bg-indigo-50 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg transition-colors duration-200 shadow-sm"
+                                                                        className="cursor-pointer w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white hover:bg-indigo-50 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg transition-colors duration-200 shadow-sm"
                                                                     >
                                                                         <Plus className="w-3 h-3 text-indigo-600" />
                                                                     </motion.button>
@@ -884,6 +1031,8 @@ export default function CartPage() {
                                                                 </motion.div>
                                                             </div>
 
+
+
                                                             {/* Actions */}
                                                             <div className="col-span-2 flex justify-center">
                                                                 <motion.button
@@ -891,10 +1040,10 @@ export default function CartPage() {
                                                                     whileHover="hover"
                                                                     whileTap="tap"
                                                                     onClick={() => removeOutfit(outfit.cartOutfitId)}
-                                                                    className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 text-red-500 hover:bg-red-50 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-red-200 hover:border-red-300"
+                                                                    className="cursor-pointer flex items-center gap-2 px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg text-sm font-medium transition-all duration-200 border border-red-200 hover:border-red-300"
                                                                 >
-                                                                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                                                                    <span className="hidden sm:inline">Remove</span>
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                    Remove
                                                                 </motion.button>
                                                             </div>
                                                         </motion.div>
@@ -1089,6 +1238,9 @@ export default function CartPage() {
                     </motion.div>
                 )}
             </div>
+
+            {/* Confirmation Modal */}
+            <ConfirmationModal />
         </div>
     );
 }

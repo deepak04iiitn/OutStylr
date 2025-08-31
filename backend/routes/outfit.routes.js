@@ -16,7 +16,8 @@ import {
     toggleReplyLike,
     toggleReplyDislike,
     getAllOutfitsAdmin,
-    toggleOutfitStatus
+    toggleOutfitStatus,
+    getTrendingOutfits
 } from '../controllers/outfit.controller.js';
 import { verifyToken } from '../utils/verifyUser.js';
 import { upload } from '../config/cloudinary.js';
@@ -24,7 +25,8 @@ import { upload } from '../config/cloudinary.js';
 const router = express.Router();
 
 // Public routes
-router.get('/getoutfits', getOutfits); 
+router.get('/getoutfits', getOutfits);
+router.get('/trending', getTrendingOutfits); 
 
 // Admin routes (move these up)
 router.get('/admin/getalloutfits', verifyToken, getAllOutfitsAdmin); 
