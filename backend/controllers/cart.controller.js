@@ -126,7 +126,7 @@ export const addOutfitToCart = async (req, res, next) => {
 
         res.status(200).json({
             message: 'Complete outfit added to cart successfully!',
-            outfitName: `${outfit.category} - ${outfit.section} Outfit by ${creatorName}`,
+            outfitName: `${outfit.category} - ${outfit.section} Outfit`,
             itemsIncluded: outfit.numberOfItems,
             cart: populatedCart
         });
