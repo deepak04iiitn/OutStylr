@@ -235,11 +235,11 @@ export default function Trending() {
                                 </div>
 
                                 {/* Outfit Image */}
-                                <div className="relative h-72 overflow-hidden">
+                                <div className="relative h-72 overflow-hidden bg-gray-50 flex items-center justify-center">
                                     <img
                                         src={outfit.image}
                                         alt={`${outfit.category} outfit`}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                                        className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-700 cursor-pointer"
                                         onClick={(e) => handleImageClick(e, outfit)}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

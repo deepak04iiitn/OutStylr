@@ -342,8 +342,8 @@ export default function CartPage() {
             console.error('Invalid outfit URL');
             return;
         }
-        window.location.href = outfitUrl;
-    };
+        window.open(outfitUrl, '_blank');
+    };    
 
     if (loading) {
         return (

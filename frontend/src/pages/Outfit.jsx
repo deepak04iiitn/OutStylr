@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Heart, MessageCircle, ThumbsDown, Search, Filter, SortDesc, X, ChevronDown, ZoomIn } from 'lucide-react';
 import ImageModal from '../components/ImageModal';
 
@@ -19,32 +19,50 @@ export default function Outfit() {
     const [hoveredCard, setHoveredCard] = useState(null);
     const [searchFocused, setSearchFocused] = useState(false);
     const [modalImage, setModalImage] = useState({ isOpen: false, imageUrl: '', imageAlt: '' });
-    const observerRef = useRef();
     
-    const categories = [
+    // Refs for stability
+    const observerRef = useRef();
+    const loadingRef = useRef(false);
+    const currentRequestRef = useRef(null);
+    
+    // Memoized constants
+    const categories = useMemo(() => [
         "Couple", "Wedding", "Traditional", "Party", "Trip/Travel", "Dinner", 
         "Date", "Birthday", "Formal", "Casual", "Festival", "Workout", 
         "Maternity", "Prom and Graduation", "Vacation", "Winter", 
         "Summer Beachwear", "Concert and Music Festival", "Outdoor Adventure", "Concert"
-    ];
+    ], []);
     
-    const sections = ["Men", "Women", "Kids"];
-    const types = ["Normal", "Sponsored", "Promoted"];
-    const sortOptions = [
+    const sections = useMemo(() => ["Men", "Women", "Kids"], []);
+    const types = useMemo(() => ["Normal", "Sponsored", "Promoted"], []);
+    const sortOptions = useMemo(() => [
         { value: 'createdAt', label: 'Date Created' },
         { value: 'numberOfLikes', label: 'Most Liked' },
         { value: 'numberOfClicks', label: 'Most Viewed' },
         { value: 'totalPrice', label: 'Price' }
-    ];
+    ], []);
 
-    // Fetch outfits function
+    // Stable fetch function without startIndex dependency
     const fetchOutfits = useCallback(async (reset = false) => {
-        if (loading) return;
+        // Prevent concurrent requests
+        if (loadingRef.current) return;
         
+        loadingRef.current = true;
         setLoading(true);
+
+        // Cancel any pending request
+        if (currentRequestRef.current) {
+            currentRequestRef.current.abort();
+        }
+
+        const controller = new AbortController();
+        currentRequestRef.current = controller;
+
         try {
+            const currentStartIndex = reset ? 0 : startIndex;
+            
             const queryParams = new URLSearchParams({
-                startIndex: reset ? 0 : startIndex,
+                startIndex: currentStartIndex,
                 limit: 9,
                 sortBy: filters.sortBy,
                 sort: filters.sort,
@@ -54,10 +72,18 @@ export default function Outfit() {
                 ...(filters.type && { type: filters.type })
             });
 
-            const response = await fetch(`/backend/outfit/getoutfits?${queryParams}`);
+            const response = await fetch(`/backend/outfit/getoutfits?${queryParams}`, {
+                signal: controller.signal
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
 
-            if (response.ok) {
+            // Only update if this is still the current request
+            if (!controller.signal.aborted) {
                 if (reset) {
                     setOutfits(data.outfits);
                     setStartIndex(9);
@@ -69,50 +95,75 @@ export default function Outfit() {
                 setHasMore(data.outfits.length === 9);
             }
         } catch (error) {
-            console.error('Error fetching outfits:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, [startIndex, searchTerm, filters, loading]);
-
-    // Initial load and filter changes
-    useEffect(() => {
-        setStartIndex(0);
-        setOutfits([]);
-        setHasMore(true);
-        fetchOutfits(true);
-    }, [searchTerm, filters]);
-
-    // Intersection Observer for infinite scroll
-    const lastOutfitElementRef = useCallback(node => {
-        if (loading) return;
-        if (observerRef.current) observerRef.current.disconnect();
-        
-        observerRef.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && hasMore) {
-                fetchOutfits();
+            if (error.name !== 'AbortError') {
+                console.error('Error fetching outfits:', error);
             }
-        });
+        } finally {
+            loadingRef.current = false;
+            setLoading(false);
+            currentRequestRef.current = null;
+        }
+    }, [searchTerm, filters, startIndex]); // Only include necessary dependencies
+
+    // Debounced search effect
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setStartIndex(0);
+            setOutfits([]);
+            setHasMore(true);
+            fetchOutfits(true);
+        }, 300); // 300ms debounce
+
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm, filters.category, filters.section, filters.type, filters.sortBy, filters.sort]);
+
+    // Stable intersection observer callback
+    const handleIntersection = useCallback((entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingRef.current) {
+            fetchOutfits(false);
+        }
+    }, [hasMore, fetchOutfits]);
+
+    // Optimized intersection observer
+    const lastOutfitElementRef = useCallback(node => {
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
         
-        if (node) observerRef.current.observe(node);
-    }, [loading, hasMore, fetchOutfits]);
+        if (node) {
+            observerRef.current = new IntersectionObserver(handleIntersection, {
+                rootMargin: '100px', // Start loading before element is visible
+                threshold: 0.1
+            });
+            observerRef.current.observe(node);
+        }
+    }, [handleIntersection]);
 
-    // Handle search
-    const handleSearchSubmit = (e) => {
+    // Cleanup observer on unmount
+    useEffect(() => {
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+            if (currentRequestRef.current) {
+                currentRequestRef.current.abort();
+            }
+        };
+    }, []);
+
+    // Memoized handlers to prevent unnecessary re-renders
+    const handleSearchSubmit = useCallback((e) => {
         e.preventDefault();
-        // Search is handled by useEffect dependency
-    };
+    }, []);
 
-    // Handle filter change
-    const handleFilterChange = (key, value) => {
+    const handleFilterChange = useCallback((key, value) => {
         setFilters(prev => ({
             ...prev,
             [key]: value
         }));
-    };
+    }, []);
 
-    // Clear all filters
-    const clearFilters = () => {
+    const clearFilters = useCallback(() => {
         setSearchTerm('');
         setFilters({
             category: '',
@@ -121,26 +172,32 @@ export default function Outfit() {
             sortBy: 'createdAt',
             sort: 'desc'
         });
-    };
+    }, []);
 
-    // Navigate to outfit details
-    const handleOutfitClick = (outfitId) => {
-        window.location.href = `/outfit/${outfitId}`;
-    };
+    const handleOutfitClick = useCallback((outfitId) => {
+        window.open(`/outfit/${outfitId}`, '_blank');
+      }, []);      
 
-    // Handle image modal
-    const handleImageClick = (e, outfit) => {
-        e.stopPropagation(); // Prevent card click
+    const handleImageClick = useCallback((e, outfit) => {
+        e.stopPropagation();
         setModalImage({
             isOpen: true,
             imageUrl: outfit.image,
             imageAlt: `${outfit.category} - ${outfit.section} Outfit`
         });
-    };
+    }, []);
 
-    const closeImageModal = () => {
+    const closeImageModal = useCallback(() => {
         setModalImage({ isOpen: false, imageUrl: '', imageAlt: '' });
-    };
+    }, []);
+
+    const handleMouseEnter = useCallback((outfitId) => {
+        setHoveredCard(outfitId);
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+        setHoveredCard(null);
+    }, []);
 
     return (
         <div className="min-h-screen relative overflow-hidden">
@@ -301,17 +358,17 @@ export default function Outfit() {
                             key={outfit._id}
                             ref={index === outfits.length - 1 ? lastOutfitElementRef : null}
                             onClick={() => handleOutfitClick(outfit._id)}
-                            onMouseEnter={() => setHoveredCard(outfit._id)}
-                            onMouseLeave={() => setHoveredCard(null)}
+                            onMouseEnter={() => handleMouseEnter(outfit._id)}
+                            onMouseLeave={handleMouseLeave}
                             className={`bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 overflow-hidden cursor-pointer group transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up ${hoveredCard === outfit._id ? 'ring-4 ring-purple-500/30' : ''}`}
                             style={{ animationDelay: `${index * 100}ms` }}
                         >
                             {/* Outfit Image */}
-                            <div className="relative h-72 overflow-hidden">
+                            <div className="relative h-72 overflow-hidden bg-gray-50 flex items-center justify-center">
                                 <img
                                     src={outfit.image}
                                     alt={`${outfit.category} outfit`}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                                    className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-700 cursor-pointer"
                                     onClick={(e) => handleImageClick(e, outfit)}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
