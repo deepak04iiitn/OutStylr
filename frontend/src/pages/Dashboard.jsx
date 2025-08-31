@@ -38,7 +38,7 @@ export default function Dashboard() {
     "Dinner", "Date", "Birthday", "Formal", "Casual", "Festival",
     "Workout", "Maternity", "Prom and Graduation", "Vacation",
     "Winter", "Summer Beachwear", "Concert and Music Festival",
-    "Outdoor Adventure", "Concert"
+    "Outdoor Adventure", "Job Interview"
   ];
 
   const sections = ["Men", "Women", "Kids"];

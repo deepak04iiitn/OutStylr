@@ -137,7 +137,7 @@ const outfitSchema = new mongoose.Schema({
             "Summer Beachwear",
             "Concert and Music Festival",
             "Outdoor Adventure",
-            "Concert"
+            "Job Interview"
         ]
     },
     section: {
