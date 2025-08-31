@@ -1,9 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 export default function LuxuryFeaturesSection({ features }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const memoizedFeatures = useMemo(() => features, [features]);
 
   return (
     <motion.section 
@@ -29,9 +32,9 @@ export default function LuxuryFeaturesSection({ features }) {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
+          {memoizedFeatures.map((feature, index) => (
             <motion.div
-              key={index}
+              key={feature.id || index}
               className="group p-8 bg-slate-800/50 backdrop-blur-lg rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-purple-500/20"
               initial={{ y: 60, opacity: 0 }}
               animate={isInView ? { y: 0, opacity: 1 } : { y: 60, opacity: 0 }}
@@ -41,23 +44,28 @@ export default function LuxuryFeaturesSection({ features }) {
                 scale: 1.02,
                 boxShadow: "0 25px 50px -12px rgba(147, 51, 234, 0.3)"
               }}
+              onHoverStart={() => setHoveredIndex(index)}
+              onHoverEnd={() => setHoveredIndex(null)}
             >
+              {/* Conditional animation - only for hovered item */}
               <motion.div 
-                className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-300"
-                animate={{
-                  rotate: [0, 10, -10, 0],
-                }}
+                className="text-5xl mb-6 transition-transform duration-300"
+                animate={hoveredIndex === index ? {
+                  rotate: [0, 5, -5, 0],
+                  scale: [1, 1.1, 1.1, 1]
+                } : {}}
                 transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  delay: index * 0.5
+                  duration: 0.6,
+                  ease: "easeInOut"
                 }}
               >
                 {feature.icon}
               </motion.div>
+              
               <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors duration-300">
                 {feature.title}
               </h3>
+              
               <p className="text-purple-200 leading-relaxed">
                 {feature.description}
               </p>
