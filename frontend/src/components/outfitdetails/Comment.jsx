@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ThumbsDown, Reply, Trash2, MessageCircle } from 'lucide-react';
+import { Heart, ThumbsDown, Reply as ReplyIcon, Trash2, MessageCircle } from 'lucide-react';
 import Reply from './Reply';
 
 function Comment({ 
@@ -185,7 +185,7 @@ function Comment({
                             whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <Reply className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <ReplyIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                             <span className="hidden xs:inline">Reply</span>
                         </motion.button>
                     )}
