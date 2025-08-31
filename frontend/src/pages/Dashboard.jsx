@@ -371,16 +371,6 @@ export default function Dashboard() {
         
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <div className="p-4 sm:p-6 max-w-full">
-            {/* DEBUG PANEL - Add this temporarily to see what's happening */}
-            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
-              <h3 className="font-bold text-yellow-800 mb-2">🐛 Debug Info:</h3>
-              <div className="text-sm text-yellow-700 space-y-1">
-                <div>Total outfits: <strong>{outfits.length}</strong></div>
-                <div>Filtered outfits: <strong>{filteredOutfits.length}</strong></div>
-                <div>Current filters: Search="{searchTerm}", Category="{filterCategory}", Section="{filterSection}", Status="{filterStatus}"</div>
-                <div>Any active filters: <strong>{!!(searchTerm || filterCategory || filterSection || filterStatus) ? 'YES' : 'NO'}</strong></div>
-              </div>
-            </div>
             
             {/* Pass outfits (not filteredOutfits) to StatsCards to show total count */}
             <StatsCards outfits={outfits} />

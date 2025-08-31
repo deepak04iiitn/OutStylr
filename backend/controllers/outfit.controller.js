@@ -761,8 +761,6 @@ export const getAllOutfitsAdmin = async (req, res, next) => {
         const activeOutfits = await Outfit.countDocuments({ isActive: true });
         const inactiveOutfits = await Outfit.countDocuments({ isActive: false });
 
-        console.log(`Admin API: Found ${outfits.length} outfits (Total: ${totalOutfits})`); // Debug log
-
         res.status(200).json({
             outfits,
             totalOutfits,
