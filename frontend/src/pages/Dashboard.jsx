@@ -55,25 +55,46 @@ export default function Dashboard() {
   }, [outfits, searchTerm, filterCategory, filterSection, filterStatus]);
 
   const filterOutfits = () => {
+    console.log('🔍 Filtering outfits...'); // DEBUG
+    console.log('📊 Total outfits before filtering:', outfits.length); // DEBUG
+    console.log('🔎 Search term:', searchTerm); // DEBUG
+    console.log('📂 Filter category:', filterCategory); // DEBUG
+    console.log('👥 Filter section:', filterSection); // DEBUG
+    console.log('📊 Filter status:', filterStatus); // DEBUG
+    
     let filtered = [...outfits];
+    
     if (searchTerm) {
+      const beforeSearch = filtered.length;
       filtered = filtered.filter(outfit =>
         outfit.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
         outfit.section.toLowerCase().includes(searchTerm.toLowerCase()) ||
         outfit.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      console.log(`🔍 After search filter: ${beforeSearch} → ${filtered.length}`); // DEBUG
     }
+    
     if (filterCategory) {
+      const beforeCategory = filtered.length;
       filtered = filtered.filter(outfit => outfit.category === filterCategory);
+      console.log(`📂 After category filter: ${beforeCategory} → ${filtered.length}`); // DEBUG
     }
+    
     if (filterSection) {
-        filtered = filtered.filter(outfit => outfit.section === filterSection);
+      const beforeSection = filtered.length;
+      filtered = filtered.filter(outfit => outfit.section === filterSection);
+      console.log(`👥 After section filter: ${beforeSection} → ${filtered.length}`); // DEBUG
     }
+    
     if (filterStatus) {
+      const beforeStatus = filtered.length;
       filtered = filtered.filter(outfit =>
         filterStatus === 'active' ? outfit.isActive : !outfit.isActive
       );
+      console.log(`📊 After status filter: ${beforeStatus} → ${filtered.length}`); // DEBUG
     }
+    
+    console.log('✅ Final filtered count:', filtered.length); // DEBUG
     setFilteredOutfits(filtered);
     setCurrentPage(1);
   };
@@ -81,17 +102,32 @@ export default function Dashboard() {
   const fetchOutfits = async () => {
     try {
       setLoading(true);
+      console.log('📡 Fetching outfits from API...'); // DEBUG
+      
       const res = await fetch('/backend/outfit/admin/getalloutfits', {
         headers: { 'Authorization': `Bearer ${currentUser.token}` }
       });
       const data = await res.json();
+      
+      console.log('📨 API Response status:', res.status); // DEBUG
+      console.log('📦 API Response data:', data); // DEBUG
+      
       if (res.ok) {
-        setOutfits(data.outfits || []);
+        const outfitsArray = data.outfits || [];
+        console.log('✅ Outfits received:', outfitsArray.length); // DEBUG
+        console.log('📋 Outfit details:', outfitsArray.map(o => ({ 
+          id: o._id, 
+          category: o.category, 
+          section: o.section, 
+          isActive: o.isActive 
+        }))); // DEBUG
+        
+        setOutfits(outfitsArray);
       } else {
         throw new Error(data.message || 'Failed to fetch outfits');
       }
     } catch (error) {
-      console.error('Error fetching outfits:', error);
+      console.error('❌ Error fetching outfits:', error);
       // You could add a toast notification here if you have a notification system
     } finally {
       setLoading(false);
@@ -292,6 +328,18 @@ export default function Dashboard() {
     resetFormAndModals();
   };
 
+  // DEBUG: Add effect to monitor state changes
+  useEffect(() => {
+    console.log('🎯 State Update - outfits:', outfits.length);
+    console.log('🎯 State Update - filteredOutfits:', filteredOutfits.length);
+    console.log('🎯 Current filters:', { 
+      searchTerm, 
+      filterCategory, 
+      filterSection, 
+      filterStatus 
+    });
+  }, [outfits, filteredOutfits, searchTerm, filterCategory, filterSection, filterStatus]);
+
   if (!currentUser?.isUserAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -323,6 +371,18 @@ export default function Dashboard() {
         
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <div className="p-4 sm:p-6 max-w-full">
+            {/* DEBUG PANEL - Add this temporarily to see what's happening */}
+            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
+              <h3 className="font-bold text-yellow-800 mb-2">🐛 Debug Info:</h3>
+              <div className="text-sm text-yellow-700 space-y-1">
+                <div>Total outfits: <strong>{outfits.length}</strong></div>
+                <div>Filtered outfits: <strong>{filteredOutfits.length}</strong></div>
+                <div>Current filters: Search="{searchTerm}", Category="{filterCategory}", Section="{filterSection}", Status="{filterStatus}"</div>
+                <div>Any active filters: <strong>{!!(searchTerm || filterCategory || filterSection || filterStatus) ? 'YES' : 'NO'}</strong></div>
+              </div>
+            </div>
+            
+            {/* Pass outfits (not filteredOutfits) to StatsCards to show total count */}
             <StatsCards outfits={outfits} />
             
             <Filters

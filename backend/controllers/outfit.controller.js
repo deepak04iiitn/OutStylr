@@ -736,15 +736,14 @@ export const toggleReplyDislike = async (req, res, next) => {
 };
 
 
-// Admin: Get all outfits (including inactive)
+// Admin: Get all outfits (including inactive) - FIXED VERSION
 export const getAllOutfitsAdmin = async (req, res, next) => {
     if (!req.user.isUserAdmin) {
         return next(errorHandler(403, 'Access denied! Admin privileges required.'));
     }
 
     try {
-        const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) || 9;
+        // Remove pagination for admin - get ALL outfits
         const sortDirection = req.query.sort === 'asc' ? 1 : -1;
 
         const filter = {};
@@ -754,14 +753,15 @@ export const getAllOutfitsAdmin = async (req, res, next) => {
         if (req.query.type) filter.type = req.query.type;
         if (req.query.isActive !== undefined) filter.isActive = req.query.isActive === 'true';
 
+        // Get ALL outfits without pagination
         const outfits = await Outfit.find(filter)
-            .sort({ createdAt: sortDirection })
-            .skip(startIndex)
-            .limit(limit);
+            .sort({ createdAt: sortDirection });
 
         const totalOutfits = await Outfit.countDocuments();
         const activeOutfits = await Outfit.countDocuments({ isActive: true });
         const inactiveOutfits = await Outfit.countDocuments({ isActive: false });
+
+        console.log(`Admin API: Found ${outfits.length} outfits (Total: ${totalOutfits})`); // Debug log
 
         res.status(200).json({
             outfits,
