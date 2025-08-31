@@ -102,7 +102,7 @@ function OutfitItems({ outfit, currentUser }) {
                             transition={{ delay: 0.4, duration: 0.5 }}
                         >
                             <motion.button
-                                onClick={() => window.location.href = '/signin'}
+                                onClick={() => window.location.href = '/sign-in'}
                                 className="flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-semibold"
                                 whileHover={{ scale: 1.02, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
                                 whileTap={{ scale: 0.95 }}
@@ -111,7 +111,7 @@ function OutfitItems({ outfit, currentUser }) {
                                 Sign In
                             </motion.button>
                             <motion.button
-                                onClick={() => window.location.href = '/signup'}
+                                onClick={() => window.location.href = '/sign-up'}
                                 className="flex items-center justify-center gap-2 px-6 py-3 border border-indigo-600 text-indigo-600 rounded-xl hover:bg-indigo-50 transition-colors font-semibold"
                                 whileHover={{ scale: 1.02, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
                                 whileTap={{ scale: 0.95 }}
