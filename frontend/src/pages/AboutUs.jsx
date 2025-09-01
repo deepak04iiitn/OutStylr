@@ -64,7 +64,7 @@ export default function AboutUs() {
             <div className="text-8xl sm:text-9xl mb-4">
               <img 
                 src='/outstylr.png'
-                alt="logo" className="w-80 h-40" 
+                alt="logo" className="w-90 h-34" 
               />
             </div>
             <motion.div
