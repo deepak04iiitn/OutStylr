@@ -199,44 +199,10 @@ export default function Header() {
               variants={itemVariants}
             >
               <Link to="/" className="flex items-center space-x-4">
-                <motion.div 
-                  className="relative w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden"
-                  animate={{
-                    boxShadow: [
-                      "0 0 15px rgba(147, 51, 234, 0.4)",
-                      "0 0 25px rgba(168, 85, 247, 0.6)",
-                      "0 0 15px rgba(147, 51, 234, 0.4)"
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  whileHover={{ 
-                    scale: 1.1, 
-                    rotate: 360,
-                    transition: { duration: 0.8, ease: "easeInOut" }
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600" />
-                  <motion.span 
-                    className="relative text-white font-bold text-xl z-10"
-                    animate={{ 
-                      textShadow: [
-                        "0 0 8px rgba(255,255,255,0.8)",
-                        "0 0 16px rgba(255,255,255,1)",
-                        "0 0 8px rgba(255,255,255,0.8)"
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    O
-                  </motion.span>
-                </motion.div>
-                <motion.span 
-                  className="text-2xl font-black bg-gradient-to-r from-purple-400 via-violet-400 to-indigo-400 bg-clip-text text-transparent"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  OutStylr
-                </motion.span>
+                <img 
+                  src='/outstylr.png'
+                  alt="logo" className="w-40 h-16" 
+                />
               </Link>
             </motion.div>
 

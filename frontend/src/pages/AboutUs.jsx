@@ -61,7 +61,12 @@ export default function AboutUs() {
               ease: "easeInOut"
             }}
           >
-            <div className="text-8xl sm:text-9xl mb-4">👗</div>
+            <div className="text-8xl sm:text-9xl mb-4">
+              <img 
+                src='/outstylr.png'
+                alt="logo" className="w-80 h-40" 
+              />
+            </div>
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-violet-500/20 rounded-full blur-3xl"
               animate={{
@@ -75,23 +80,6 @@ export default function AboutUs() {
               }}
             />
           </motion.div>
-
-          <motion.h1 
-            className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6"
-            animate={{
-              textShadow: [
-                "0 0 20px rgba(147, 51, 234, 0.3)",
-                "0 0 40px rgba(168, 85, 247, 0.5)",
-                "0 0 20px rgba(147, 51, 234, 0.3)"
-              ]
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-          >
-            About{' '}
-            <span className="bg-gradient-to-r from-purple-400 via-violet-400 to-indigo-400 bg-clip-text text-transparent">
-              OutStylr
-            </span>
-          </motion.h1>
 
           <motion.p 
             className="text-xl sm:text-2xl text-purple-300 max-w-4xl mx-auto leading-relaxed"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   const footerLinks = {
@@ -91,49 +92,12 @@ export default function Footer() {
               className="lg:col-span-2"
               variants={itemVariants}
             >
-              <motion.div 
-                className="flex items-center space-x-4 mb-8"
-                whileHover={{ scale: 1.05 }}
-              >
-                <motion.div 
-                  className="relative w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden"
-                  animate={{
-                    boxShadow: [
-                      "0 0 20px rgba(147, 51, 234, 0.4)",
-                      "0 0 40px rgba(168, 85, 247, 0.6)",
-                      "0 0 20px rgba(147, 51, 234, 0.4)"
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600" />
-                  <motion.span 
-                    className="relative text-white font-bold text-2xl z-10"
-                    animate={{
-                      textShadow: [
-                        "0 0 10px rgba(255,255,255,0.8)",
-                        "0 0 20px rgba(255,255,255,1)",
-                        "0 0 10px rgba(255,255,255,0.8)"
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    O
-                  </motion.span>
-                </motion.div>
-                <div>
-                  <motion.span 
-                    className="text-3xl font-black bg-gradient-to-r from-purple-400 via-violet-400 to-indigo-400 bg-clip-text text-transparent block"
-                    animate={{
-                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-                    }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ backgroundSize: "200% 200%" }}
-                  >
-                    OutStylr
-                  </motion.span>
-                </div>
-              </motion.div>
+              <Link to="/" className="flex items-center space-x-4">
+                <img 
+                  src='/outstylr.png'
+                  alt="logo" className="w-50 h-24" 
+                />
+              </Link>
               
               <motion.p 
                 className="text-purple-200 text-lg mb-8 max-w-md leading-relaxed"
