@@ -99,7 +99,7 @@ function OutfitInfo({
                         <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-3 py-2 text-xs text-blue-700">
                             <ZoomIn className="w-3 h-3" />
                             <span className="font-medium">Tip:</span>
-                            <span>Click the outfit image to view full size</span>
+                            <span>Click the outfit image to view full size and prices of items may vary</span>
                         </div>
                     </motion.div>
                     

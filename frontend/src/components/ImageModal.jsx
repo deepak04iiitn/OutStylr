@@ -68,7 +68,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, imageAlt = "Image" }) => {
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                     onClick={handleDownload}
-                                    className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+                                    className="cursor-pointer p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
                                     title="Download image"
                                 >
                                     <Download className="w-5 h-5 text-white" />
@@ -79,7 +79,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, imageAlt = "Image" }) => {
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                     onClick={handleShare}
-                                    className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+                                    className="cursor-pointer p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
                                     title="Share image"
                                 >
                                     <Share2 className="w-5 h-5 text-white" />
@@ -90,7 +90,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, imageAlt = "Image" }) => {
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                     onClick={onClose}
-                                    className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+                                    className="cursor-pointer p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
                                     title="Close modal"
                                 >
                                     <X className="w-5 h-5 text-white" />
@@ -135,7 +135,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, imageAlt = "Image" }) => {
                             className="mt-4 text-center"
                         >
                             <p className="text-white/70 text-sm">
-                                Click outside the image or press <kbd className="px-2 py-1 bg-white/20 rounded text-xs">ESC</kbd> to close
+                                Click outside the image or cross icon to close
                             </p>
                         </motion.div>
                     </motion.div>
